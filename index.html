@@ -4,178 +4,203 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="theme-color" content="#050a1f" />
-<title>¥➜ Ar — Change Yuan / Ariary</title>
+<meta name="theme-color" content="#0b1f3a" />
+<title>Yuan → Ariary · Taux de change CNY/MGA</title>
 <style>
   :root{
-    --bg:#050a1f; --neon:#00e5ff; --neon2:#7c4dff; --ariary:#ffca28; --txt:#e3f2fd;
-    --panel:rgba(12,22,54,.55); --line:rgba(0,229,255,.25);
+    --bg:#0b1f3a; --bg2:#0e2747; --steel:#1b3a5c; --ink:#0a1426;
+    --txt:#eaf2fb; --muted:#9bb2cc; --accent:#2f80ed; --accent2:#16a085;
+    --ariary:#e0a800; --line:rgba(255,255,255,.08); --panel:rgba(255,255,255,.04);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{
-    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-    background:radial-gradient(ellipse at 50% -10%,#0b1b4d 0%,#050a1f 60%,#02040f 100%);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 55%,#081726 100%);
     color:var(--txt); overflow:hidden; position:relative;
     padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
   }
-  /* Ciel / océan animé */
-  .sky{position:fixed;inset:0;overflow:hidden;z-index:0;}
-  .grid{position:absolute;inset:0;
-    background-image:linear-gradient(rgba(0,229,255,.08) 1px,transparent 1px),
-                     linear-gradient(90deg,rgba(0,229,255,.08) 1px,transparent 1px);
-    background-size:42px 42px;
-    mask-image:linear-gradient(to bottom,transparent,#000 30%,#000 70%,transparent);
-    animation:drift 18s linear infinite;}
-  @keyframes drift{from{transform:translateY(0)}to{transform:translateY(42px)}}
-  .horizon{position:absolute;left:0;right:0;bottom:0;height:38%;
-    background:linear-gradient(to top,rgba(0,229,255,.18),transparent);
-    border-top:1px solid var(--line);}
-  /* Vaisseaux animés */
-  .ship{position:absolute;font-size:26px;filter:drop-shadow(0 0 6px var(--neon));animation:sail 26s linear infinite;opacity:.85;}
-  .plane{position:absolute;font-size:22px;filter:drop-shadow(0 0 6px var(--neon2));animation:fly 32s linear infinite;opacity:.9;}
-  @keyframes sail{from{left:-8%}to{left:108%}}
-  @keyframes fly{from{left:-10%;top:18%}to{left:110%;top:6%}}
-  .ship.s2{animation-duration:34s;bottom:8%;font-size:20px;opacity:.7;}
-  .plane.p2{animation-duration:40s;top:30%;font-size:18px;opacity:.7;}
+  /* Fond professionnel : lignes discrètes + bandeau transport */
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+  .bg .grid{position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+    background-size:46px 46px; mask-image:linear-gradient(to bottom,#000,transparent 70%);}
+  .band{position:absolute;left:0;right:0;height:120px;opacity:.5;}
+  .band.top{top:0;background:linear-gradient(180deg,rgba(47,128,237,.12),transparent);}
+  .band.bottom{bottom:0;background:linear-gradient(0deg,rgba(22,160,133,.12),transparent);}
 
-  .wrap{position:relative;z-index:2;max-width:520px;margin:0 auto;min-height:100%;
-    display:flex;flex-direction:column;justify-content:center;padding:24px 18px;gap:18px;}
+  /* Vaisseaux SVG réels, discrets, en bas du bandeau */
+  .ship{position:absolute;bottom:14%;width:120px;opacity:.85;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:sail 28s linear infinite;}
+  .ship.s2{animation-duration:38s;width:90px;bottom:20%;opacity:.6;}
+  .plane{position:absolute;width:90px;opacity:.9;animation:fly 34s linear infinite;}
+  .plane.p2{animation-duration:46s;width:64px;opacity:.65;top:26%;}
+  @keyframes sail{from{left:-14%}to{left:108%}}
+  @keyframes fly{from{left:-12%;top:14%}to{left:110%;top:7%}}
+
+  .wrap{position:relative;z-index:2;max-width:560px;margin:0 auto;min-height:100%;
+    display:flex;flex-direction:column;justify-content:center;padding:26px 18px;gap:16px;}
 
   .head{text-align:center;}
-  .head h1{font-size:24px;font-weight:800;letter-spacing:1px;
-    background:linear-gradient(90deg,var(--neon),var(--neon2));-webkit-background-clip:text;background-clip:text;color:transparent;
-    text-shadow:0 0 18px rgba(0,229,255,.25);}
-  .head p{font-size:12px;color:#8fa8d6;margin-top:4px;}
+  .head .eyebrow{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+  .head h1{font-size:23px;font-weight:700;letter-spacing:.3px;color:#fff;margin-top:4px;}
+  .head .sub{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .ribbon{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;
+    color:var(--accent);border:1px solid var(--line);border-radius:20px;padding:4px 12px;background:var(--panel);}
 
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    box-shadow:0 0 30px rgba(0,229,255,.10),inset 0 0 20px rgba(124,77,255,.06);}
-  .field{margin-bottom:14px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 40px rgba(0,0,0,.3);}
+  .field{margin-bottom:16px;}
   .field:last-child{margin-bottom:0;}
-  .field label{display:block;font-size:11px;letter-spacing:1px;color:#8fa8d6;margin-bottom:6px;text-transform:uppercase;}
-  input[type=number]{width:100%;background:rgba(3,8,25,.7);border:1px solid var(--line);
-    color:var(--neon);font-size:24px;font-weight:700;padding:12px 14px;border-radius:10px;outline:none;}
-  input:focus{border-color:var(--neon);box-shadow:0 0 12px rgba(0,229,255,.35);}
-  .row{display:flex;align-items:center;gap:10px;}
-  .row .arrow{font-size:22px;color:var(--neon2);}
+  .field label{display:block;font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:7px;text-transform:uppercase;}
+  input[type=number]{width:100%;background:var(--ink);border:1px solid var(--line);
+    color:#fff;font-size:26px;font-weight:600;padding:14px 16px;border-radius:10px;outline:none;}
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,128,237,.25);}
+  .route{display:flex;align-items:center;justify-content:center;gap:12px;margin:6px 0;}
+  .route .end{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted);}
+  .route .end b{color:var(--txt);font-size:14px;}
+  .route .arrow{color:var(--accent);font-size:22px;}
+  .route svg{width:30px;height:30px;}
 
-  .result{margin-top:16px;text-align:center;}
-  .result .big{font-size:40px;font-weight:800;color:var(--ariary);
-    text-shadow:0 0 20px rgba(255,202,40,.35);}
-  .result .unit{font-size:14px;color:#8fa8d6;}
-  .formula{font-size:11px;color:#6079a8;margin-top:8px;}
+  .result{margin-top:18px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;}
+  .result .big{font-size:38px;font-weight:700;color:var(--ariary);letter-spacing:.5px;}
+  .result .unit{font-size:14px;color:var(--muted);margin-left:6px;}
+  .result .formula{font-size:11.5px;color:var(--muted);margin-top:8px;}
 
-  .rate{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8fa8d6;
-    border-top:1px dashed var(--line);margin-top:14px;padding-top:12px;}
-  .rate b{color:var(--neon);}
-  .status{font-size:11px;}
-  .status.ok{color:#69f0ae;} .status.bad{color:#ff8a80;}
+  .rate{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    border-top:1px solid var(--line);margin-top:16px;padding-top:14px;font-size:13px;color:var(--muted);}
+  .rate .v{color:var(--txt);font-weight:600;}
+  .rate .v b{color:var(--accent2);}
+  .status{font-size:11.5px;display:inline-flex;align-items:center;gap:5px;}
+  .status .dot{width:8px;height:8px;border-radius:50%;background:#16a085;}
+  .status.bad .dot{background:#e74c3c;}
+  .status.bad .dot,.status.bad{color:#e74c3c;}
+  button.refresh{background:var(--accent);border:none;color:#fff;font-weight:600;
+    padding:9px 16px;border-radius:9px;font-size:13px;cursor:pointer;}
+  button.refresh:active{transform:scale(.97);}
 
-  button.refresh{background:linear-gradient(90deg,var(--neon),var(--neon2));border:none;color:#02040f;
-    font-weight:700;padding:7px 14px;border-radius:10px;font-size:12px;cursor:pointer;}
-  button.refresh:active{transform:scale(.96);}
-
-  .foot{text-align:center;font-size:10px;color:#456;margin-top:6px;}
-  .foot a{color:#678;}
+  .foot{text-align:center;font-size:10.5px;color:#5d7796;margin-top:4px;}
+  .foot a{color:#7d97b8;text-decoration:none;}
 </style>
 </head>
 <body>
-<div class="sky">
+<div class="bg">
   <div class="grid"></div>
-  <div class="horizon"></div>
-  <div class="ship">🚢</div>
-  <div class="ship s2">⛴️</div>
-  <div class="plane">✈️</div>
-  <div class="plane p2">🛩️</div>
+  <div class="band top"></div>
+  <div class="band bottom"></div>
+  <!-- Bateau cargo (SVG réel) -->
+  <svg class="ship" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="30" width="116" height="14" rx="3" fill="#2f4d70"/>
+    <rect x="6" y="22" width="20" height="9" fill="#3a5d82"/>
+    <rect x="30" y="22" width="20" height="9" fill="#45688f"/>
+    <rect x="54" y="20" width="22" height="11" fill="#3a5d82"/>
+    <rect x="80" y="22" width="20" height="9" fill="#45688f"/>
+    <rect x="104" y="26" width="12" height="18" fill="#1f3550"/>
+    <rect x="2" y="44" width="116" height="5" fill="#16314a"/>
+    <path d="M10 30 L60 14 L110 30 Z" fill="#dfe7f0" opacity=".9"/>
+    <line x1="60" y1="14" x2="60" y2="8" stroke="#1f3550" stroke-width="2"/>
+    <ellipse cx="60" cy="49" rx="58" ry="3" fill="#0a1f33" opacity=".5"/>
+  </svg>
+  <svg class="ship s2" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="30" width="112" height="12" rx="3" fill="#274160"/>
+    <rect x="14" y="22" width="84" height="9" fill="#315579"/>
+    <rect x="104" y="25" width="12" height="16" fill="#1a2e44"/>
+    <path d="M14 30 L60 17 L106 30 Z" fill="#cdd8e6" opacity=".85"/>
+  </svg>
+  <!-- Avion de ligne (SVG réel) -->
+  <svg class="plane" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 20 L60 14 L96 20 L60 26 Z" fill="#e8eef6"/>
+    <path d="M40 16 L30 2 L36 16 Z" fill="#c5d3e3"/>
+    <path d="M40 24 L30 38 L36 24 Z" fill="#c5d3e3"/>
+    <path d="M62 17 L74 9 L70 18 Z" fill="#aab9cc"/>
+    <rect x="20" y="18" width="40" height="4" fill="#b7c6d8"/>
+    <circle cx="84" cy="20" r="2.4" fill="#2f80ed"/>
+  </svg>
+  <svg class="plane p2" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 20 L60 14 L96 20 L60 26 Z" fill="#d6deea"/>
+    <path d="M40 16 L30 2 L36 16 Z" fill="#b3c2d4"/>
+    <path d="M40 24 L30 38 L36 24 Z" fill="#b3c2d4"/>
+  </svg>
 </div>
 
 <div class="wrap">
   <div class="head">
-    <h1>¥ ➜ Ar · CHANGE MONDIAL</h1>
-    <p>Conversion Yuan chinois → Ariary malgache · commerce international</p>
+    <div class="eyebrow">International Trade · FX</div>
+    <h1>Convertisseur Yuan → Ariary</h1>
+    <div class="sub">Taux de change CNY / MGA en temps réel pour le commerce international</div>
+    <div class="ribbon">🚢🛫 Liaisons maritimes & aériennes · Madagascar ↔ Chine</div>
   </div>
 
   <div class="card">
     <div class="field">
-      <label>Prix en Yuan (¥ CNY)</label>
+      <label>Prix en Yuan chinois (CNY ¥)</label>
       <input type="number" id="yuan" value="100" min="0" step="0.01" inputmode="decimal" />
     </div>
-    <div class="row">
-      <span style="color:var(--neon2)">✈️🚢</span>
-      <span class="arrow">➜</span>
-      <span style="color:var(--ariary)">🇲🇬</span>
+
+    <div class="route">
+      <div class="end"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#16314a" stroke="#2f80ed"/><text x="20" y="26" font-size="16" text-anchor="middle" fill="#fff">¥</text></svg><b>CNY</b>Chine</div>
+      <span class="arrow">→</span>
+      <div class="end"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#16314a" stroke="#e0a800"/><text x="20" y="26" font-size="14" text-anchor="middle" fill="#fff">Ar</text></svg><b>MGA</b>Madagascar</div>
     </div>
+
     <div class="field" style="margin-top:14px;">
-      <label>Résultat en Ariary (MGA)</label>
+      <label>Montant en Ariary (MGA)</label>
       <div class="result">
-        <div><span class="big" id="out">—</span> <span class="unit">Ar</span></div>
-        <div class="formula">MGA = ¥ × 1.03 × cours de change</div>
+        <span class="big" id="out">—</span><span class="unit">Ar</span>
+        <div class="formula">MGA = ¥ × 1,03 × cours de change CNY/MGA</div>
       </div>
     </div>
 
     <div class="rate">
-      <div>1 ¥ ≈ <b id="rate">…</b> Ar <span id="src" class="status"></span></div>
-      <button class="refresh" id="refresh">↻ Actualiser</button>
+      <div>1 CNY ≈ <span class="v"><b id="rate">…</b> Ar</span> &nbsp;<span id="src" class="status"><span class="dot"></span><span class="txt">chargement…</span></span></div>
+      <button class="refresh" id="refresh">↻ Actualiser le taux</button>
     </div>
   </div>
 
   <div class="foot">
-    Cours via <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">open.er-api.com</a> · mis à jour chaque appel
+    Cours fourni par <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">ExchangeRate-API (open.er-api.com)</a> · mis à jour à chaque appel
   </div>
 </div>
 
 <script>
-  const FEE = 1.03; // majoration 3% comme demandé
-  const FALLBACK_RATE = 631.59; // secours si API KO
-
-  const yuanEl = document.getElementById('yuan');
-  const outEl  = document.getElementById('out');
-  const rateEl = document.getElementById('rate');
-  const srcEl  = document.getElementById('src');
+  const FEE = 1.03;            // majoration 3% (formule demandée)
+  const FALLBACK_RATE = 631.59;
+  const yuanEl=document.getElementById('yuan');
+  const outEl=document.getElementById('out');
+  const rateEl=document.getElementById('rate');
+  const srcEl=document.getElementById('src');
 
   function calc(rate){
-    const y = parseFloat(yuanEl.value);
-    if (isNaN(y) || y < 0){ outEl.textContent = '—'; return; }
-    const mga = y * FEE * rate;
-    outEl.textContent = mga.toLocaleString('fr-FR',{maximumFractionDigits:2});
+    const y=parseFloat(yuanEl.value);
+    if(isNaN(y)||y<0){outEl.textContent='—';return;}
+    outEl.textContent=(y*FEE*rate).toLocaleString('fr-FR',{maximumFractionDigits:2});
   }
-
   async function fetchRate(){
-    srcEl.textContent = '⏳'; srcEl.className = 'status';
-    rateEl.textContent = '…';
+    srcEl.className='status';srcEl.innerHTML='<span class="dot"></span><span class="txt">chargement…</span>';
+    rateEl.textContent='…';
     try{
-      const r = await fetch('https://open.er-api.com/v6/latest/CNY');
-      const j = await r.json();
-      const rate = j && j.rates && j.rates.MGA;
-      if (!rate){ throw new Error('MGA introuvable'); }
-      rateEl.textContent = rate.toLocaleString('fr-FR',{maximumFractionDigits:2});
-      srcEl.textContent = '✓ en ligne';
-      srcEl.className = 'status ok';
-      if (j.time_last_update_utc) {
-        srcEl.title = 'MAJ: ' + j.time_last_update_utc;
-      }
+      const r=await fetch('https://open.er-api.com/v6/latest/CNY');
+      const j=await r.json();
+      const rate=j&&j.rates&&j.rates.MGA;
+      if(!rate)throw new Error('MGA introuvable');
+      rateEl.textContent=rate.toLocaleString('fr-FR',{maximumFractionDigits:2});
+      srcEl.className='status';
+      srcEl.innerHTML='<span class="dot"></span><span class="txt">taux en ligne'+(j.time_last_update_utc?' · '+j.time_last_update_utc.slice(0,16):'')+'</span>';
       calc(rate);
-      localStorage.setItem('yuan_rate', rate);
-      localStorage.setItem('yuan_rate_time', Date.now());
-    } catch(e){
-      const fb = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_RATE;
-      rateEl.textContent = fb.toLocaleString('fr-FR',{maximumFractionDigits:2});
-      srcEl.textContent = '⚠ hors-ligne (secours)';
-      srcEl.className = 'status bad';
+      localStorage.setItem('yuan_rate',rate);
+      localStorage.setItem('yuan_rate_time',Date.now());
+    }catch(e){
+      const fb=parseFloat(localStorage.getItem('yuan_rate'))||FALLBACK_RATE;
+      rateEl.textContent=fb.toLocaleString('fr-FR',{maximumFractionDigits:2});
+      srcEl.className='status bad';
+      srcEl.innerHTML='<span class="dot"></span><span class="txt">hors-ligne (dernier taux mémorisé)</span>';
       calc(fb);
     }
   }
-
-  yuanEl.addEventListener('input', ()=>{
-    const rate = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_RATE;
-    calc(rate);
-  });
-  document.getElementById('refresh').addEventListener('click', fetchRate);
-
-  // Init
-  const cached = parseFloat(localStorage.getItem('yuan_rate'));
-  if (cached){ rateEl.textContent = cached.toLocaleString('fr-FR',{maximumFractionDigits:2}); calc(cached); }
+  yuanEl.addEventListener('input',()=>{calc(parseFloat(localStorage.getItem('yuan_rate'))||FALLBACK_RATE);});
+  document.getElementById('refresh').addEventListener('click',fetchRate);
+  const cached=parseFloat(localStorage.getItem('yuan_rate'));
+  if(cached){rateEl.textContent=cached.toLocaleString('fr-FR',{maximumFractionDigits:2});calc(cached);}
   fetchRate();
 </script>
 </body>
