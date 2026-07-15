@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#050a1f" />
+<title>¥➜ Ar — Change Yuan / Ariary</title>
+<style>
+  :root{
+    --bg:#050a1f; --neon:#00e5ff; --neon2:#7c4dff; --ariary:#ffca28; --txt:#e3f2fd;
+    --panel:rgba(12,22,54,.55); --line:rgba(0,229,255,.25);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:radial-gradient(ellipse at 50% -10%,#0b1b4d 0%,#050a1f 60%,#02040f 100%);
+    color:var(--txt); overflow:hidden; position:relative;
+    padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
+  }
+  /* Ciel / océan animé */
+  .sky{position:fixed;inset:0;overflow:hidden;z-index:0;}
+  .grid{position:absolute;inset:0;
+    background-image:linear-gradient(rgba(0,229,255,.08) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(0,229,255,.08) 1px,transparent 1px);
+    background-size:42px 42px;
+    mask-image:linear-gradient(to bottom,transparent,#000 30%,#000 70%,transparent);
+    animation:drift 18s linear infinite;}
+  @keyframes drift{from{transform:translateY(0)}to{transform:translateY(42px)}}
+  .horizon{position:absolute;left:0;right:0;bottom:0;height:38%;
+    background:linear-gradient(to top,rgba(0,229,255,.18),transparent);
+    border-top:1px solid var(--line);}
+  /* Vaisseaux animés */
+  .ship{position:absolute;font-size:26px;filter:drop-shadow(0 0 6px var(--neon));animation:sail 26s linear infinite;opacity:.85;}
+  .plane{position:absolute;font-size:22px;filter:drop-shadow(0 0 6px var(--neon2));animation:fly 32s linear infinite;opacity:.9;}
+  @keyframes sail{from{left:-8%}to{left:108%}}
+  @keyframes fly{from{left:-10%;top:18%}to{left:110%;top:6%}}
+  .ship.s2{animation-duration:34s;bottom:8%;font-size:20px;opacity:.7;}
+  .plane.p2{animation-duration:40s;top:30%;font-size:18px;opacity:.7;}
+
+  .wrap{position:relative;z-index:2;max-width:520px;margin:0 auto;min-height:100%;
+    display:flex;flex-direction:column;justify-content:center;padding:24px 18px;gap:18px;}
+
+  .head{text-align:center;}
+  .head h1{font-size:24px;font-weight:800;letter-spacing:1px;
+    background:linear-gradient(90deg,var(--neon),var(--neon2));-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 18px rgba(0,229,255,.25);}
+  .head p{font-size:12px;color:#8fa8d6;margin-top:4px;}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 0 30px rgba(0,229,255,.10),inset 0 0 20px rgba(124,77,255,.06);}
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:11px;letter-spacing:1px;color:#8fa8d6;margin-bottom:6px;text-transform:uppercase;}
+  input[type=number]{width:100%;background:rgba(3,8,25,.7);border:1px solid var(--line);
+    color:var(--neon);font-size:24px;font-weight:700;padding:12px 14px;border-radius:10px;outline:none;}
+  input:focus{border-color:var(--neon);box-shadow:0 0 12px rgba(0,229,255,.35);}
+  .row{display:flex;align-items:center;gap:10px;}
+  .row .arrow{font-size:22px;color:var(--neon2);}
+
+  .result{margin-top:16px;text-align:center;}
+  .result .big{font-size:40px;font-weight:800;color:var(--ariary);
+    text-shadow:0 0 20px rgba(255,202,40,.35);}
+  .result .unit{font-size:14px;color:#8fa8d6;}
+  .formula{font-size:11px;color:#6079a8;margin-top:8px;}
+
+  .rate{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8fa8d6;
+    border-top:1px dashed var(--line);margin-top:14px;padding-top:12px;}
+  .rate b{color:var(--neon);}
+  .status{font-size:11px;}
+  .status.ok{color:#69f0ae;} .status.bad{color:#ff8a80;}
+
+  button.refresh{background:linear-gradient(90deg,var(--neon),var(--neon2));border:none;color:#02040f;
+    font-weight:700;padding:7px 14px;border-radius:10px;font-size:12px;cursor:pointer;}
+  button.refresh:active{transform:scale(.96);}
+
+  .foot{text-align:center;font-size:10px;color:#456;margin-top:6px;}
+  .foot a{color:#678;}
+</style>
+</head>
+<body>
+<div class="sky">
+  <div class="grid"></div>
+  <div class="horizon"></div>
+  <div class="ship">🚢</div>
+  <div class="ship s2">⛴️</div>
+  <div class="plane">✈️</div>
+  <div class="plane p2">🛩️</div>
+</div>
+
+<div class="wrap">
+  <div class="head">
+    <h1>¥ ➜ Ar · CHANGE MONDIAL</h1>
+    <p>Conversion Yuan chinois → Ariary malgache · commerce international</p>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>Prix en Yuan (¥ CNY)</label>
+      <input type="number" id="yuan" value="100" min="0" step="0.01" inputmode="decimal" />
+    </div>
+    <div class="row">
+      <span style="color:var(--neon2)">✈️🚢</span>
+      <span class="arrow">➜</span>
+      <span style="color:var(--ariary)">🇲🇬</span>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label>Résultat en Ariary (MGA)</label>
+      <div class="result">
+        <div><span class="big" id="out">—</span> <span class="unit">Ar</span></div>
+        <div class="formula">MGA = ¥ × 1.03 × cours de change</div>
+      </div>
+    </div>
+
+    <div class="rate">
+      <div>1 ¥ ≈ <b id="rate">…</b> Ar <span id="src" class="status"></span></div>
+      <button class="refresh" id="refresh">↻ Actualiser</button>
+    </div>
+  </div>
+
+  <div class="foot">
+    Cours via <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">open.er-api.com</a> · mis à jour chaque appel
+  </div>
+</div>
+
+<script>
+  const FEE = 1.03; // majoration 3% comme demandé
+  const FALLBACK_RATE = 631.59; // secours si API KO
+
+  const yuanEl = document.getElementById('yuan');
+  const outEl  = document.getElementById('out');
+  const rateEl = document.getElementById('rate');
+  const srcEl  = document.getElementById('src');
+
+  function calc(rate){
+    const y = parseFloat(yuanEl.value);
+    if (isNaN(y) || y < 0){ outEl.textContent = '—'; return; }
+    const mga = y * FEE * rate;
+    outEl.textContent = mga.toLocaleString('fr-FR',{maximumFractionDigits:2});
+  }
+
+  async function fetchRate(){
+    srcEl.textContent = '⏳'; srcEl.className = 'status';
+    rateEl.textContent = '…';
+    try{
+      const r = await fetch('https://open.er-api.com/v6/latest/CNY');
+      const j = await r.json();
+      const rate = j && j.rates && j.rates.MGA;
+      if (!rate){ throw new Error('MGA introuvable'); }
+      rateEl.textContent = rate.toLocaleString('fr-FR',{maximumFractionDigits:2});
+      srcEl.textContent = '✓ en ligne';
+      srcEl.className = 'status ok';
+      if (j.time_last_update_utc) {
+        srcEl.title = 'MAJ: ' + j.time_last_update_utc;
+      }
+      calc(rate);
+      localStorage.setItem('yuan_rate', rate);
+      localStorage.setItem('yuan_rate_time', Date.now());
+    } catch(e){
+      const fb = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_RATE;
+      rateEl.textContent = fb.toLocaleString('fr-FR',{maximumFractionDigits:2});
+      srcEl.textContent = '⚠ hors-ligne (secours)';
+      srcEl.className = 'status bad';
+      calc(fb);
+    }
+  }
+
+  yuanEl.addEventListener('input', ()=>{
+    const rate = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_RATE;
+    calc(rate);
+  });
+  document.getElementById('refresh').addEventListener('click', fetchRate);
+
+  // Init
+  const cached = parseFloat(localStorage.getItem('yuan_rate'));
+  if (cached){ rateEl.textContent = cached.toLocaleString('fr-FR',{maximumFractionDigits:2}); calc(cached); }
+  fetchRate();
+</script>
+</body>
+</html>
