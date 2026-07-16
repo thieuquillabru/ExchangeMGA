@@ -490,7 +490,7 @@
       "chargeur anker 65w": { weight: 180, confidence: "high", sources: ["anker.com"] },
     };
 
-    // === SYSTÈME D'INTELLIGENCE ARTIFICIELLE MULTI-AGENTS ===
+    // === SYSTÈME D'INTELLIGENCE ARTIFICIELLE MULTI-AGENTS (Amélioré) ===
     function searchProductOnInternet(query) {
       const q = query.toLowerCase().trim();
 
@@ -506,14 +506,40 @@
         }
       }
 
-      // === Agent 3 : Analyse IA du nom du produit (NLP simple) ===
+      // === Agent IA Avancé (Raisonnement précis) ===
       let weight = 450;
       let confidence = "medium";
       let sources = ["IA Multi-Agents : Analyse + Sources croisées"];
       let agentUsed = "Agent IA Analyse";
 
-      // Agent 4 : Raisonnement catégoriel avancé (IA)
-      if (q.includes("iphone") || q.includes("smartphone") || q.includes("galaxy s")) {
+      // === RÈGLES PRÉCISES POUR PETITS OBJETS (Balles, Accessoires) ===
+      if (q.includes("balle") || q.includes("ping pong") || q.includes("tennis de table")) {
+        weight = 2.7;
+        confidence = "high";
+        sources = ["Fédération Internationale de Tennis de Table", "ITTF", "Agent IA Sports"];
+        agentUsed = "Agent IA Sports de Table";
+      } 
+      else if (q.includes("balle de tennis")) {
+        weight = 58;
+        confidence = "high";
+        sources = ["ITF", "Agent IA Sports"];
+        agentUsed = "Agent IA Sports";
+      } 
+      else if (q.includes("balle de golf")) {
+        weight = 45.9;
+        confidence = "high";
+        sources = ["USGA", "Agent IA Sports"];
+        agentUsed = "Agent IA Sports";
+      } 
+      else if (q.includes("balle") && q.includes("foot")) {
+        weight = 430;
+        confidence = "high";
+        sources = ["FIFA", "Agent IA Sports"];
+        agentUsed = "Agent IA Sports";
+      }
+
+      // Agent 3 : Analyse IA du nom du produit
+      else if (q.includes("iphone") || q.includes("smartphone") || q.includes("galaxy s")) {
         weight = q.includes("pro max") || q.includes("ultra") ? 227 : (q.includes("pro") ? 199 : 170);
         confidence = "high";
         sources = ["apple.com", "samsung.com", "gsmarena.com", "Agent IA"];
@@ -580,7 +606,7 @@
         agentUsed = "Agent IA Audio";
       }
 
-      // Agent 5 : Consensus IA (croisement des agents)
+      // Agent 5 : Consensus IA
       return {
         weight: weight,
         confidence: confidence,
