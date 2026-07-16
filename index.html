@@ -236,7 +236,7 @@
         <div>1 CNY ~ <span class="v"><b id="rate">...</b> Ar</span> &nbsp;<span id="src" class="status"><span class="dot"></span><span class="txt">IA Analyse...</span></span></div>
         <button class="refresh" id="refresh">Actualiser le taux</button>
       </div>
-      <div class="foot">Cours de reference mid-market (XE / Google) via ExchangeRate-API / repli open.er-api</div>
+      <div class="foot">Cours de reference mid-market via ExchangeRate-API (open.er-api.com), mise a jour quotidienne. Clique sur la source affichee ci-dessus pour la verifier toi-meme.</div>
     </div>
   </div>
 
@@ -352,33 +352,43 @@
 
     function fetchRate(){
       srcEl.className = 'status';
-      srcEl.innerHTML = '<span class="dot"></span><span class="txt">IA Analyse...</span>';
+      srcEl.innerHTML = '<span class="dot"></span><span class="txt">Recherche du taux...</span>';
       rateEl.textContent = '...';
+      // Ordre corrigé : open.er-api.com est l'endpoint officiel actuel et documenté
+      // (l'ancienne URL api.exchangerate-api.com/v4/... a été remplacée par celui-ci,
+      // on la garde seulement comme second repli au cas où).
       var sources = [
-        'https://api.exchangerate-api.com/v4/latest/CNY',
-        'https://open.er-api.com/v6/latest/CNY'
+        { url: 'https://open.er-api.com/v6/latest/CNY', label: 'open.er-api.com (ExchangeRate-API, open access)', page: 'https://www.exchangerate-api.com/docs/free' },
+        { url: 'https://api.exchangerate-api.com/v4/latest/CNY', label: 'exchangerate-api.com (legacy v4)', page: 'https://www.exchangerate-api.com' }
       ];
-      var rate = null, prov = '';
+      var rate = null, provLabel = '', provPage = '', updatedAt = '';
       function tryNext(i){
         if (i >= sources.length){
           var fb = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_RATE;
           rateEl.textContent = fb.toLocaleString('fr-FR', {maximumFractionDigits:2});
           srcEl.className = 'status bad';
-          srcEl.innerHTML = '<span class="dot"></span><span class="txt">hors-ligne (dernier taux)</span>';
+          srcEl.innerHTML = '<span class="dot"></span><span class="txt">hors-ligne (dernier taux connu)</span>';
           calcChange(fb);
           return;
         }
-        fetch(sources[i]).then(function(r){ return r.json(); }).then(function(j){
+        fetch(sources[i].url).then(function(r){ return r.json(); }).then(function(j){
           var v = j && j.rates && j.rates.MGA;
-          if (v){ rate = v; prov = sources[i]; finish(); }
-          else { tryNext(i+1); }
+          if (v){
+            rate = v;
+            provLabel = sources[i].label;
+            provPage = sources[i].page;
+            // Les deux formats d'API exposent un horodatage de dernière mise à jour sous des noms differents
+            updatedAt = j.time_last_update_utc || j.date || '';
+            finish();
+          } else { tryNext(i+1); }
         }).catch(function(){ tryNext(i+1); });
       }
       function finish(){
         rateEl.textContent = rate.toLocaleString('fr-FR', {maximumFractionDigits:2});
         srcEl.className = 'status';
         srcEl.innerHTML = '<span class="dot"></span><span class="txt">' +
-          (prov.indexOf('exchangerate-api.com') !== -1 ? 'XE / Google' : 'open.er-api') + ' en ligne</span>';
+          '<a href="' + provPage + '" target="_blank" rel="noopener noreferrer" style="color:#16a085;text-decoration:underline;">' + provLabel + '</a>' +
+          (updatedAt ? ' · maj ' + updatedAt : '') + '</span>';
         calcChange(rate);
         localStorage.setItem('yuan_rate', rate);
       }
