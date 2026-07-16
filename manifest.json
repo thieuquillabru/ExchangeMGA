@@ -1,0 +1,23 @@
+{
+  "name": "Convertisseur Yuan/Ariary",
+  "short_name": "Yuan/Ariary",
+  "description": "Convertisseur de devises CNY → MGA avec taux en temps réel",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1f3a",
+  "theme_color": "#0b1f3a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
