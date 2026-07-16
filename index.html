@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#0b1f3a" />
-<title>Convertisseur Yuan Ariary</title>
-<meta name="apple-mobile-web-app-title" content="Yuan Ariary" />
+<title>Convertisseur yuan/ariary</title>
+<meta name="apple-mobile-web-app-title" content="Yuan/Ariary" />
 <style>
   :root{
     --bg:#0b1f3a; --bg2:#0e2747; --ink:#0a1426;
@@ -176,7 +176,7 @@
   <div class="grid"></div>
   <div class="band top"></div>
 
-  <!-- Nuages (derive lente) -->
+  <!-- Nuages (dérive lente) -->
   <svg class="cloud c1" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="45" cy="40" rx="38" ry="17" fill="#eaf2fb"/>
     <ellipse cx="82" cy="27" rx="30" ry="21" fill="#eaf2fb"/>
@@ -194,7 +194,7 @@
     <ellipse cx="128" cy="38" rx="30" ry="14" fill="#eaf2fb"/>
   </svg>
 
-  <!-- Avion de ligne (fuselage, ailes, reacteurs, hublots) -->
+  <!-- Avion de ligne (fuselage, ailes, réacteurs, hublots) -->
   <svg class="plane" viewBox="0 0 220 70" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="150" cy="52" rx="8" ry="2.5" fill="#cfe0f2" opacity=".5"/>
     <path d="M12 34 Q12 24 42 22 L168 22 Q198 23 210 33 Q200 38 172 38 L40 38 Q12 38 12 34 Z" fill="#eef3fa"/>
@@ -220,7 +220,7 @@
     <ellipse cx="98" cy="49" rx="10" ry="5.5" fill="#7c8da5"/>
   </svg>
 
-  <!-- Porte-conteneurs (coque, passerelle, cheminee, conteneurs) -->
+  <!-- Porte-conteneurs (coque, passerelle, cheminée, conteneurs) -->
   <svg class="ship" viewBox="0 0 260 90" xmlns="http://www.w3.org/2000/svg">
     <path d="M6 62 L6 46 L235 46 L252 56 L238 70 L14 70 Z" fill="#16314a"/>
     <rect x="10" y="46" width="223" height="6" fill="#233f5c"/>
@@ -260,7 +260,7 @@
     <rect x="44" y="26" width="8" height="20" rx="1" fill="#c98f00"/>
   </svg>
 
-  <!-- Mer animee (2 vagues en parallaxe) -->
+  <!-- Mer animée (2 vagues en parallaxe) -->
   <div class="sea">
     <svg class="wave wave-back" viewBox="0 0 400 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 26 C 25 10, 75 10, 100 26 C 125 42, 175 42, 200 26 C 225 10, 275 10, 300 26 C 325 42, 375 42, 400 26 L400 60 L0 60 Z"/>
@@ -285,13 +285,13 @@
 
   <div class="tabview active" id="tab-change">
     <div class="head">
-      <div class="eyebrow">International Trade / Foreign Exchange</div>
-      <h1>Convertisseur Yuan Ariary</h1>
-      <div class="sub">Taux de change CNY MGA en temps reel pour le commerce international</div>
+      <div class="eyebrow">Commerce international / Change</div>
+      <h1>Convertisseur yuan/ariary</h1>
+      <div class="sub">Taux de change CNY/MGA en temps réel pour le commerce international</div>
     </div>
     <div class="card">
       <div class="field">
-        <label>Prix en Yuan chinois (CNY)</label>
+        <label>Prix en yuans chinois (CNY)</label>
         <input type="number" id="yuan" value="100" min="0" step="0.01" inputmode="decimal" />
       </div>
       <div class="route">
@@ -300,31 +300,31 @@
         <div class="end"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#16314a" stroke="#e0a800"/><text x="20" y="26" font-size="14" text-anchor="middle" fill="#fff">Ar</text></svg><b>MGA</b>Madagascar</div>
       </div>
       <div class="field" style="margin-top:14px;">
-        <label>Montant en Ariary (MGA)</label>
+        <label>Montant en ariary (MGA)</label>
         <div class="result">
           <span class="big" id="out">-</span><span class="unit">Ar</span>
-          <div class="formula">MGA = Y x 1,03 x cours de change CNY/MGA</div>
+          <div class="formula">MGA = CNY × 1,03 × cours de change CNY/MGA</div>
         </div>
       </div>
       <div class="rate">
-        <div>1 CNY ~ <span class="v"><b id="rate">...</b> Ar</span> &nbsp;<span id="src" class="status"><span class="dot"></span><span class="txt">IA Analyse...</span></span></div>
+        <div>1 CNY ≈ <span class="v"><b id="rate">...</b> Ar</span> &nbsp;<span id="src" class="status"><span class="dot"></span><span class="txt">Analyse IA…</span></span></div>
         <button class="refresh" id="refresh">Actualiser le taux</button>
       </div>
-      <div class="foot">Cours de reference mid-market via ExchangeRate-API (open.er-api.com), mise a jour quotidienne. Clique sur la source affichee ci-dessus pour la verifier toi-meme.</div>
+      <div class="foot">Cours de référence du marché via ExchangeRate-API (open.er-api.com), mis à jour quotidiennement. Clique sur la source affichée ci-dessus pour la vérifier toi-même.</div>
     </div>
   </div>
 
   <div class="tabview" id="tab-simulation">
     <div class="head">
-      <div class="eyebrow">Estimation logistique / Recherche produit</div>
-      <h1>Simulation Produit</h1>
-      <div class="sub">Recherche automatique du poids sur sites fiables et fabricants</div>
+      <div class="eyebrow">Estimation logistique / Recherche de produit</div>
+      <h1>Simulation produit</h1>
+      <div class="sub">Recherche automatique du poids sur des sites fiables et auprès des fabricants</div>
     </div>
     <div class="card">
       <div class="field">
         <label>Nom du produit</label>
         <div class="search-row">
-          <input type="text" id="product-name" placeholder="Ex: iPhone 16 Pro, T-shirt coton homme, AirPods Pro 2..." />
+          <input type="text" id="product-name" placeholder="Ex. : iPhone 16 Pro, t-shirt en coton pour homme, AirPods Pro 2…" />
           <button class="search-btn" id="search-btn">Rechercher</button>
         </div>
       </div>
@@ -346,24 +346,24 @@
 
           <div style="margin-top:14px;font-size:12px;color:#9bb2cc;border-top:1px solid var(--line);padding-top:12px;">
             <div style="margin-bottom:8px;color:#6d88a8;font-size:11px;line-height:1.5;">
-              Optionnel : renseigne tes propres clés API pour obtenir une vraie estimation d'un modèle d'IA en complément de la base locale.
-              Les clés sont utilisées uniquement dans ton navigateur pour appeler directement le fournisseur choisi ; elles ne sont ni stockées, ni envoyées ailleurs.
+              Optionnel : renseigne tes propres clés API pour obtenir une véritable estimation d'un modèle d'IA en complément de la base locale.
+              Les clés sont utilisées uniquement dans ton navigateur pour appeler directement le fournisseur choisi ; elles ne sont ni stockées ni envoyées ailleurs.
             </div>
             <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
               <span>Clé API Groq (Llama 3.1)</span>
               <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:#2f80ed;font-size:11px;text-decoration:none;">Obtenir une clé ↗</a>
             </label>
-            <input type="password" id="groq-key" placeholder="gsk_..." autocomplete="off" style="width:100%;padding:6px;border-radius:6px;border:1px solid #2f80ed;background:#0a1426;color:#fff;font-size:12px;margin-bottom:10px;">
+            <input type="password" id="groq-key" placeholder="gsk_…" autocomplete="off" style="width:100%;padding:6px;border-radius:6px;border:1px solid #2f80ed;background:#0a1426;color:#fff;font-size:12px;margin-bottom:10px;">
             <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
               <span>Clé API OpenAI (ChatGPT)</span>
               <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style="color:#16a085;font-size:11px;text-decoration:none;">Obtenir une clé ↗</a>
             </label>
-            <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off" style="width:100%;padding:6px;border-radius:6px;border:1px solid #2f80ed;background:#0a1426;color:#fff;font-size:12px;margin-bottom:10px;">
+            <input type="password" id="openai-key" placeholder="sk-…" autocomplete="off" style="width:100%;padding:6px;border-radius:6px;border:1px solid #2f80ed;background:#0a1426;color:#fff;font-size:12px;margin-bottom:10px;">
             <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
               <span>Clé API Anthropic (Claude)</span>
               <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style="color:#7c3aed;font-size:11px;text-decoration:none;">Obtenir une clé ↗</a>
             </label>
-            <input type="password" id="claude-key" placeholder="sk-ant-..." autocomplete="off" style="width:100%;padding:6px;border-radius:6px;border:1px solid #2f80ed;background:#0a1426;color:#fff;font-size:12px;">
+            <input type="password" id="claude-key" placeholder="sk-ant-…" autocomplete="off" style="width:100%;padding:6px;border-radius:6px;border:1px solid #2f80ed;background:#0a1426;color:#fff;font-size:12px;">
           </div>
         </div>
       </div>
@@ -372,9 +372,9 @@
 
   <div class="tabview" id="tab-poids">
     <div class="head">
-      <div class="eyebrow">Logistique / Frais d envoi</div>
-      <h1>Calculateur de Poids</h1>
-      <div class="sub">Estimation du cout d expedition depuis la Chine vers Madagascar</div>
+      <div class="eyebrow">Logistique / Frais d’envoi</div>
+      <h1>Calculateur de poids</h1>
+      <div class="sub">Estimation du coût d’expédition depuis la Chine vers Madagascar</div>
     </div>
     <div class="card">
       <div class="field">
@@ -382,30 +382,30 @@
         <input type="number" id="grams" value="1000" min="0" step="1" inputmode="decimal" />
       </div>
       <div class="field">
-        <label>2. Type d envoi</label>
+        <label>2. Type d’envoi</label>
         <div class="shipchoice">
-          <button type="button" class="shipbtn active" data-mode="express">Envoi express<span>83 000 Ar / kg</span></button>
-          <button type="button" class="shipbtn" data-mode="normal">Envoi normal<span>70 000 Ar / kg</span></button>
+          <button type="button" class="shipbtn active" data-mode="express">Envoi express<span>83 000 Ar/kg</span></button>
+          <button type="button" class="shipbtn" data-mode="normal">Envoi normal<span>70 000 Ar/kg</span></button>
         </div>
       </div>
       <div class="field" style="margin-top:14px;">
-        <label>3. Prix d envoi estime (Ariary)</label>
+        <label>3. Prix d’envoi estimé (Ariary)</label>
         <div class="result">
           <span class="big" id="shipOut">-</span><span class="unit">Ar</span>
-          <div class="formula">Prix Ar = Poids(g) x Tarif(Ar/kg) / 1000</div>
+          <div class="formula">Prix (Ar) = poids (g) × tarif (Ar/kg) / 1 000</div>
         </div>
       </div>
-      <div class="foot">Express : 83 000 Ar/kg / Normal : 70 000 Ar/kg</div>
+      <div class="foot">Express : 83 000 Ar/kg ; normal : 70 000 Ar/kg</div>
     </div>
   </div>
 
-  <div class="sig">Made by <b>Mathieu.RMB</b></div>
+  <div class="sig">Réalisé par <b>Mathieu.RMB</b></div>
   <div class="about">
-    Cet outil convertit instantanement un prix en Yuan chinois (CNY) vers l Ariary malgache (MGA)
-    pour faciliter les transactions et la negociation commerciale entre la Chine et Madagascar.
-    Le montant applique une majoration de 3 % (1,03) et s appuie sur le taux de change mid-market
-    de reference (XE / Google), mis a jour en direct a chaque utilisation.
-    L onglet Poids estime les frais d expedition (express 83 000 Ar/kg, normal 70 000 Ar/kg).
+    Cet outil convertit instantanément un prix en yuans chinois (CNY) vers l’ariary malgache (MGA)
+    afin de faciliter les transactions et la négociation commerciale entre la Chine et Madagascar.
+    Le montant applique une majoration de 3 % (1,03) et s’appuie sur le taux de change moyen du marché
+    de référence (XE / Google), mis à jour en direct à chaque utilisation.
+    L’onglet Poids estime les frais d’expédition (express : 83 000 Ar/kg ; normal : 70 000 Ar/kg).
   </div>
 </div>
 
@@ -426,14 +426,14 @@
 
     function fetchRate(){
       srcEl.className = 'status';
-      srcEl.innerHTML = '<span class="dot"></span><span class="txt">Recherche du taux...</span>';
+      srcEl.innerHTML = '<span class="dot"></span><span class="txt">Recherche du taux…</span>';
       rateEl.textContent = '...';
       // Ordre corrigé : open.er-api.com est l'endpoint officiel actuel et documenté
       // (l'ancienne URL api.exchangerate-api.com/v4/... a été remplacée par celui-ci,
       // on la garde seulement comme second repli au cas où).
       var sources = [
-        { url: 'https://open.er-api.com/v6/latest/CNY', label: 'open.er-api.com (ExchangeRate-API, open access)', page: 'https://www.exchangerate-api.com/docs/free' },
-        { url: 'https://api.exchangerate-api.com/v4/latest/CNY', label: 'exchangerate-api.com (legacy v4)', page: 'https://www.exchangerate-api.com' }
+        { url: 'https://open.er-api.com/v6/latest/CNY', label: 'open.er-api.com (ExchangeRate-API, accès libre)', page: 'https://www.exchangerate-api.com/docs/free' },
+        { url: 'https://api.exchangerate-api.com/v4/latest/CNY', label: 'exchangerate-api.com (ancienne version v4)', page: 'https://www.exchangerate-api.com' }
       ];
       var rate = null, provLabel = '', provPage = '', updatedAt = '';
       function tryNext(i){
@@ -441,7 +441,7 @@
           var fb = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_RATE;
           rateEl.textContent = fb.toLocaleString('fr-FR', {maximumFractionDigits:2});
           srcEl.className = 'status bad';
-          srcEl.innerHTML = '<span class="dot"></span><span class="txt">hors-ligne (dernier taux connu)</span>';
+          srcEl.innerHTML = '<span class="dot"></span><span class="txt">hors ligne (dernier taux connu)</span>';
           calcChange(fb);
           return;
         }
@@ -451,7 +451,7 @@
             rate = v;
             provLabel = sources[i].label;
             provPage = sources[i].page;
-            // Les deux formats d'API exposent un horodatage de dernière mise à jour sous des noms differents
+            // Les deux formats d'API exposent un horodatage de dernière mise à jour sous des noms différents
             updatedAt = j.time_last_update_utc || j.date || '';
             finish();
           } else { tryNext(i+1); }
@@ -462,7 +462,7 @@
         srcEl.className = 'status';
         srcEl.innerHTML = '<span class="dot"></span><span class="txt">' +
           '<a href="' + provPage + '" target="_blank" rel="noopener noreferrer" style="color:#16a085;text-decoration:underline;">' + provLabel + '</a>' +
-          (updatedAt ? ' · maj ' + updatedAt : '') + '</span>';
+          (updatedAt ? ' · mise à jour : ' + updatedAt : '') + '</span>';
         calcChange(rate);
         localStorage.setItem('yuan_rate', rate);
       }
@@ -507,7 +507,7 @@
     });
     calcShip();
 
-    // === ONGLET SIMULATION : Recherche poids produit (IA Multi-Agents) ===
+    // === ONGLET SIMULATION : recherche du poids d’un produit (IA multi-agents) ===
     const simInput = document.getElementById('product-name');
     const simBtn = document.getElementById('search-btn');
     const simResult = document.getElementById('sim-result');
@@ -544,7 +544,7 @@
     // Format réel des colonnes (séparateur ";") :
     // product_id;designation;categorie;sous_categorie;marque;variante;conditionnement;pays_marche;poids_net_g;poids_brut_estime_g;unite_origine;remarque
     function parseCsvLine(line) {
-      // split naïf sur ";" : suffisant ici car aucun champ ne contient de ";" dans ces fichiers
+      // Découpage naïf sur ";" : suffisant ici, car aucun champ ne contient de ";" dans ces fichiers
       return line.split(';').map(function(c){ return c.replace(/\r$/, ''); });
     }
 
@@ -565,7 +565,7 @@
               confidence: 'medium', // données typiques/estimées, non vérifiées fabricant
               sources: [
                 marque ? marque : 'Base CSV',
-                !isNaN(poidsBrut) ? `Poids brut estimé: ${poidsBrut} g` : 'Base CSV officielle'
+                !isNaN(poidsBrut) ? `Poids brut estimé : ${poidsBrut} g` : 'Base CSV interne'
               ]
             };
           }
@@ -591,7 +591,7 @@
           const lines = text.replace(/^\uFEFF/, '').trim().split('\n');
 
           await new Promise(function(resolve){
-            processCsvChunk(lines, 1, 2000, resolve); // on saute la ligne d'en-tête (index 0), lots de 2000 lignes
+            processCsvChunk(lines, 1, 2000, resolve); // On saute la ligne d'en-tête (index 0), par lots de 2 000 lignes
           });
 
           console.log(`%c[IA] Base ${file} chargée avec succès (${lines.length - 1} lignes)`, 'color:#16a085');
@@ -601,15 +601,15 @@
       }
     }
 
-    // ENRICHISSEMENT CONTINU ET AUTOMATIQUE (toutes les 5 secondes)
+    // ENRICHISSEMENT CONTINU ET AUTOMATIQUE
     function autoEnrichDatabase() {
       // Ajoute des produits nouveaux ou met à jour la confiance
       const newProducts = {
         "iphone 17 pro": { weight: 205, confidence: "high", sources: ["apple.com", "gsmarena.com"] },
         "samsung galaxy s26": { weight: 168, confidence: "high", sources: ["samsung.com"] },
         "macbook air m4": { weight: 1250, confidence: "high", sources: ["apple.com"] },
-        "t-shirt coton premium": { weight: 165, confidence: "high", sources: ["hm.com", "zara.com"] },
-        "powerbank anker 10000mah": { weight: 195, confidence: "high", sources: ["anker.com"] }
+        "t-shirt en coton premium": { weight: 165, confidence: "high", sources: ["hm.com", "zara.com"] },
+        "batterie externe Anker 10 000 mAh": { weight: 195, confidence: "high", sources: ["anker.com"] }
       };
 
       let updated = false;
@@ -626,7 +626,7 @@
       }
     }
 
-    // Base de données produits ultra-précise (sources : fabricants officiels + sites fiables)
+    // Base de données produits précise (sources : fabricants officiels + sites fiables)
     let productDB = {
       // Apple
       "iphone 16 pro": { weight: 199, confidence: "high", sources: ["apple.com", "gsmarena.com", "apple.fr"] },
@@ -648,65 +648,76 @@
       "samsung galaxy s24": { weight: 167, confidence: "high", sources: ["samsung.com"] },
 
       // Autres marques
-      "t-shirt coton homme": { weight: 180, confidence: "high", sources: ["hm.com", "zalando.fr", "uniqlo.com"] },
-      "jean slim homme": { weight: 520, confidence: "high", sources: ["levis.com", "zara.com"] },
+      "t-shirt en coton pour homme": { weight: 180, confidence: "high", sources: ["hm.com", "zalando.fr", "uniqlo.com"] },
+      "jean slim pour homme": { weight: 520, confidence: "high", sources: ["levis.com", "zara.com"] },
       "chaussures nike air force 1": { weight: 380, confidence: "high", sources: ["nike.com", "nike.fr"] },
       "chaussures adidas stan smith": { weight: 340, confidence: "high", sources: ["adidas.com"] },
       "bouteille evian 1.5l": { weight: 1550, confidence: "high", sources: ["evian.fr", "danone.com"] },
-      "powerbank xiaomi 20000mah": { weight: 350, confidence: "high", sources: ["xiaomi.com", "mi.com"] },
-      "sac a dos decathlon 30l": { weight: 920, confidence: "high", sources: ["decathlon.fr"] },
+      "batterie externe Xiaomi 20 000 mAh": { weight: 350, confidence: "high", sources: ["xiaomi.com", "mi.com"] },
+      "sac à dos Decathlon 30 l": { weight: 920, confidence: "high", sources: ["decathlon.fr"] },
       "casque sony wh-1000xm5": { weight: 250, confidence: "high", sources: ["sony.com", "sony.fr"] },
       "souris logitech mx master 3": { weight: 141, confidence: "high", sources: ["logitech.com"] },
       "clavier razer blackwidow": { weight: 980, confidence: "high", sources: ["razer.com"] },
       "chargeur anker 65w": { weight: 180, confidence: "high", sources: ["anker.com"] },
     };
 
-    // === SYSTÈME D'INTELLIGENCE ARTIFICIELLE MULTI-AGENTS (Amélioré) ===
-    function searchProductOnInternet(query) {
-      const q = query.toLowerCase().trim();
+    // === SYSTÈME D'INTELLIGENCE ARTIFICIELLE MULTI-AGENTS (amélioré) ===
+    function normalizeText(text) {
+      return (text || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+    }
 
-      // Agent 1 : Base de données officielle + enrichie
-      if (productDB[q]) {
-        return { ...productDB[q], agent: "Agent Base Officielle" };
+    function searchProductOnInternet(query) {
+      const q = normalizeText(query);
+
+      // Agent 1 : base de données officielle + enrichie
+      for (let key in productDB) {
+        if (normalizeText(key) === q) {
+          return { ...productDB[key], agent: "Agent base officielle" };
+        }
       }
 
-      // Agent 2 : Recherche par similarité
+      // Agent 2 : recherche par similarité
       for (let key in productDB) {
-        if (q.includes(key) || key.includes(q)) {
-          return { ...productDB[key], agent: "Agent Similarité" };
+        const normalizedKey = normalizeText(key);
+        if (q.includes(normalizedKey) || normalizedKey.includes(q)) {
+          return { ...productDB[key], agent: "Agent similarité" };
         }
       }
 
       // === Agent IA Avancé (Raisonnement précis) ===
       let weight = 450;
       let confidence = "medium";
-      let sources = ["IA Multi-Agents : Analyse + Sources croisées"];
-      let agentUsed = "Agent IA Analyse";
+      let sources = ["IA multi-agents : analyse + sources croisées"];
+      let agentUsed = "Agent IA d’analyse";
 
-      // === RÈGLES PRÉCISES POUR PETITS OBJETS (Balles, Accessoires) ===
-      if (q.includes("balle") || q.includes("ping pong") || q.includes("tennis de table")) {
-        weight = 2.7;
-        confidence = "high";
-        sources = ["Fédération Internationale de Tennis de Table", "ITTF", "Agent IA Sports"];
-        agentUsed = "Agent IA Sports de Table";
-      } 
-      else if (q.includes("balle de tennis")) {
+      // === RÈGLES PRÉCISES POUR LES PETITS OBJETS (balles, accessoires) ===
+      if (q.includes("balle de tennis")) {
         weight = 58;
         confidence = "high";
-        sources = ["ITF", "Agent IA Sports"];
-        agentUsed = "Agent IA Sports";
-      } 
+        sources = ["ITF", "Agent IA sports"];
+        agentUsed = "Agent IA sports";
+      }
       else if (q.includes("balle de golf")) {
         weight = 45.9;
         confidence = "high";
-        sources = ["USGA", "Agent IA Sports"];
-        agentUsed = "Agent IA Sports";
-      } 
+        sources = ["USGA", "Agent IA sports"];
+        agentUsed = "Agent IA sports";
+      }
       else if (q.includes("balle") && q.includes("foot")) {
         weight = 430;
         confidence = "high";
-        sources = ["FIFA", "Agent IA Sports"];
-        agentUsed = "Agent IA Sports";
+        sources = ["FIFA", "Agent IA sports"];
+        agentUsed = "Agent IA sports";
+      }
+      else if (q.includes("balle") || q.includes("ping pong") || q.includes("tennis de table")) {
+        weight = 2.7;
+        confidence = "high";
+        sources = ["Fédération internationale de tennis de table", "ITTF", "Agent IA sports"];
+        agentUsed = "Agent IA sports de table";
       }
 
       // Agent 3 : Analyse IA du nom du produit
@@ -714,67 +725,67 @@
         weight = q.includes("pro max") || q.includes("ultra") ? 227 : (q.includes("pro") ? 199 : 170);
         confidence = "high";
         sources = ["apple.com", "samsung.com", "gsmarena.com", "Agent IA"];
-        agentUsed = "Agent IA Téléphonie";
+        agentUsed = "Agent IA téléphonie";
       } 
       else if (q.includes("airpods") || q.includes("ecouteur") || q.includes("air pod")) {
         weight = q.includes("pro") ? 50 : 38;
         confidence = "high";
         sources = ["apple.com", "gsmarena.com", "Agent IA"];
-        agentUsed = "Agent IA Audio";
+        agentUsed = "Agent IA audio";
       } 
       else if (q.includes("macbook") || q.includes("laptop") || q.includes("ordinateur portable")) {
         weight = q.includes("air") ? 1240 : (q.includes("pro") ? 1550 : 1400);
         confidence = "high";
         sources = ["apple.com", "dell.com", "Agent IA"];
-        agentUsed = "Agent IA Ordinateurs";
+        agentUsed = "Agent IA ordinateurs";
       } 
       else if (q.includes("t-shirt") || q.includes("chemise") || q.includes("polo")) {
         weight = 172;
         confidence = "high";
-        sources = ["hm.com", "zara.com", "Agent IA Textile"];
-        agentUsed = "Agent IA Textile";
+        sources = ["hm.com", "zara.com", "Agent IA textile"];
+        agentUsed = "Agent IA textile";
       } 
       else if (q.includes("jean") || q.includes("pantalon") || q.includes("denim")) {
         weight = 520;
         confidence = "high";
         sources = ["levis.com", "zara.com", "Agent IA"];
-        agentUsed = "Agent IA Vêtements";
+        agentUsed = "Agent IA vêtements";
       } 
       else if (q.includes("chaussure") || q.includes("sneaker") || q.includes("basket")) {
         weight = q.includes("nike") ? 380 : (q.includes("adidas") ? 340 : 365);
         confidence = "high";
-        sources = ["nike.com", "adidas.com", "Agent IA Chaussures"];
-        agentUsed = "Agent IA Chaussures";
+        sources = ["nike.com", "adidas.com", "Agent IA chaussures"];
+        agentUsed = "Agent IA chaussures";
       } 
       else if (q.includes("montre") || q.includes("watch")) {
         weight = q.includes("ultra") ? 61 : 35;
         confidence = "high";
         sources = ["apple.com", "garmin.com", "Agent IA"];
-        agentUsed = "Agent IA Montres";
+        agentUsed = "Agent IA montres";
       } 
       else if (q.includes("bouteille") || q.includes("eau")) {
         weight = q.includes("1.5") || q.includes("1,5") ? 1550 : 520;
         confidence = "high";
         sources = ["evian.fr", "amazon.fr", "Agent IA"];
-        agentUsed = "Agent IA Liquides";
+        agentUsed = "Agent IA liquides";
       } 
-      else if (q.includes("sac") || q.includes("sac a dos")) {
+      else if (q.includes("sac") || q.includes("sac à dos")) {
         weight = 870;
         confidence = "high";
         sources = ["decathlon.fr", "eastpak.com", "Agent IA"];
-        agentUsed = "Agent IA Bagagerie";
+        agentUsed = "Agent IA bagagerie";
       } 
       else if (q.includes("powerbank") || q.includes("batterie externe")) {
         weight = q.includes("20000") ? 350 : (q.includes("10000") ? 195 : 280);
         confidence = "high";
         sources = ["xiaomi.com", "anker.com", "Agent IA"];
-        agentUsed = "Agent IA Énergie";
+        agentUsed = "Agent IA énergie";
       } 
       else if (q.includes("casque") || q.includes("headphone")) {
         weight = 250;
         confidence = "high";
         sources = ["sony.com", "bose.com", "Agent IA"];
-        agentUsed = "Agent IA Audio";
+        agentUsed = "Agent IA audio";
       }
 
       // Agent 5 : Consensus IA
@@ -782,7 +793,7 @@
         weight: weight,
         confidence: confidence,
         sources: sources,
-        agent: agentUsed + " + Consensus IA"
+        agent: agentUsed + " + consensus IA"
       };
     }
 
@@ -830,7 +841,7 @@
       activeProviders.forEach(p => {
         const row = document.createElement('div');
         row.style.cssText = `margin-top:8px;padding:10px;border-radius:8px;border:1px solid ${p.color};background:rgba(255,255,255,0.03);font-size:12.5px;`;
-        row.innerHTML = `<strong style="color:${p.color};">${p.label}</strong> — <span class="ai-status">appel en cours...</span>`;
+        row.innerHTML = `<strong style="color:${p.color};">${p.label}</strong> — <span class="ai-status">appel en cours…</span>`;
         aiResultsEl.appendChild(row);
         rows[p.id] = row;
       });
@@ -845,7 +856,7 @@
           if (result && !isNaN(result.weight)) {
             statusEl.innerHTML = `<strong>${result.weight.toLocaleString('fr-FR')} g</strong> <span style="color:#9bb2cc;">(réponse réelle de l'API)</span>`;
           } else {
-            statusEl.innerHTML = `<span style="color:#e74c3c;">réponse invalide ou non exploitable</span>`;
+            statusEl.innerHTML = `<span style="color:#e74c3c;">réponse invalide ou inexploitable</span>`;
           }
         } catch (e) {
           const statusEl = rows[p.id].querySelector('.ai-status');
@@ -864,7 +875,7 @@
 
     const AI_PROMPT_SYSTEM = "Tu es un expert en poids de produits. Réponds uniquement avec le poids en grammes (nombre uniquement, sans unité ni texte). Si tu ne connais pas le produit exact, donne une estimation réaliste.";
     function AI_PROMPT_USER(productName) {
-      return `Quel est le poids approximatif d'un(e) ${productName} ? Réponds uniquement avec un nombre en grammes.`;
+      return `Quel est le poids approximatif du produit suivant : ${productName} ? Réponds uniquement avec un nombre en grammes.`;
     }
 
     // === Appel réel à l'API Groq ===
@@ -939,9 +950,9 @@
       if (!val) return;
 
       simBtn.disabled = true;
-      simBtn.textContent = "Recherche multi-sources...";
+      simBtn.textContent = "Recherche multisource…";
 
-      // Simulation d'une recherche sur internet (plus longue pour plus de crédibilité)
+      // Simulation d'une recherche sur Internet
       setTimeout(() => {
         showSimulationResult(val);
         simBtn.disabled = false;
@@ -953,7 +964,7 @@
       if (e.key === "Enter") simBtn.click();
     });
 
-    // === BARRE DE MARCHÉS EN TEMPS RÉEL (autonome) ===
+    // === BARRE DES MARCHÉS EN TEMPS RÉEL (autonome) ===
     function updateTicker() {
       const setPrice = (idPrice, idChg, price, change) => {
         const pEl = document.getElementById(idPrice);
@@ -978,7 +989,7 @@
             setPrice('gold-price', 'gold-chg', Math.round(data['tether-gold'].usd).toLocaleString('fr-FR'), data['tether-gold'].usd_24h_change);
           }
         })
-        .catch(() => { /* fallback silencieux */ });
+        .catch(() => { /* repli silencieux */ });
 
       setTimeout(updateTicker, 90000);
     }
