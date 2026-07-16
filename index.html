@@ -517,37 +517,62 @@
     }
 
     // === CHARGEMENT DES BASES DE DONNÉES CSV (BA1 à BA7) ===
+    // Format réel des colonnes (séparateur ";") :
+    // product_id;designation;categorie;sous_categorie;marque;variante;conditionnement;pays_marche;poids_net_g;poids_brut_estime_g;unite_origine;remarque
+    function parseCsvLine(line) {
+      // split naïf sur ";" : suffisant ici car aucun champ ne contient de ";" dans ces fichiers
+      return line.split(';').map(function(c){ return c.replace(/\r$/, ''); });
+    }
+
+    function processCsvChunk(lines, startIndex, chunkSize, onDone) {
+      const end = Math.min(startIndex + chunkSize, lines.length);
+      for (let i = startIndex; i < end; i++) {
+        if (!lines[i]) continue;
+        const cols = parseCsvLine(lines[i]);
+        if (cols.length >= 9) {
+          const nom = (cols[1] || '').toLowerCase().trim(); // designation
+          const marque = (cols[4] || '').trim();
+          const poidsNet = parseFloat(cols[8]);             // poids_net_g
+          const poidsBrut = parseFloat(cols[9]);            // poids_brut_estime_g
+
+          if (nom && !isNaN(poidsNet)) {
+            productDB[nom] = {
+              weight: poidsNet,
+              confidence: 'medium', // données typiques/estimées, non vérifiées fabricant
+              sources: [
+                marque ? marque : 'Base CSV',
+                !isNaN(poidsBrut) ? `Poids brut estimé: ${poidsBrut} g` : 'Base CSV officielle'
+              ]
+            };
+          }
+        }
+      }
+      if (end < lines.length) {
+        // On laisse respirer le thread principal entre deux lots (évite de geler l'UI)
+        setTimeout(function(){ processCsvChunk(lines, end, chunkSize, onDone); }, 0);
+      } else if (onDone) {
+        onDone();
+      }
+    }
+
     async function loadCSVDatabase() {
       const csvFiles = ['BA1.csv','BA2.csv','BA3.csv','BA4.csv','BA5.csv','BA6.csv','BA7.csv'];
-      
+
       for (const file of csvFiles) {
         try {
-          const response = await fetch(`data/${file}`);
-          if (!response.ok) continue;
-          
+          const response = await fetch(file); // fichiers à la racine du repo, pas dans "data/"
+          if (!response.ok) { console.log(`%c[IA] Impossible de charger ${file} (HTTP ${response.status})`, 'color:#e74c3c'); continue; }
+
           const text = await response.text();
-          const lines = text.trim().split('\n');
-          
-          for (let i = 1; i < lines.length; i++) {
-            const cols = lines[i].split(',');
-            if (cols.length >= 3) {
-              const nom = cols[0].toLowerCase().trim();
-              const weight = parseFloat(cols[1]);
-              const confidence = cols[2].trim();
-              const source = cols[3] ? cols[3].trim() : 'Base CSV';
-              
-              if (nom && !isNaN(weight)) {
-                productDB[nom] = {
-                  weight: weight,
-                  confidence: confidence,
-                  sources: [source, 'Base CSV officielle']
-                };
-              }
-            }
-          }
-          console.log(`%c[IA] Base ${file} chargée avec succès`, 'color:#16a085');
+          const lines = text.replace(/^\uFEFF/, '').trim().split('\n');
+
+          await new Promise(function(resolve){
+            processCsvChunk(lines, 1, 2000, resolve); // on saute la ligne d'en-tête (index 0), lots de 2000 lignes
+          });
+
+          console.log(`%c[IA] Base ${file} chargée avec succès (${lines.length - 1} lignes)`, 'color:#16a085');
         } catch (e) {
-          console.log(`%c[IA] Impossible de charger ${file}`, 'color:#e74c3c');
+          console.log(`%c[IA] Impossible de charger ${file}: ${e.message}`, 'color:#e74c3c');
         }
       }
     }
