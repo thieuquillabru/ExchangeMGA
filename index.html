@@ -430,6 +430,42 @@
       }
     }
 
+    // === CHARGEMENT DES BASES DE DONNÉES CSV (BA1 à BA7) ===
+    async function loadCSVDatabase() {
+      const csvFiles = ['BA1.csv','BA2.csv','BA3.csv','BA4.csv','BA5.csv','BA6.csv','BA7.csv'];
+      
+      for (const file of csvFiles) {
+        try {
+          const response = await fetch(`data/${file}`);
+          if (!response.ok) continue;
+          
+          const text = await response.text();
+          const lines = text.trim().split('\n');
+          
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',');
+            if (cols.length >= 3) {
+              const nom = cols[0].toLowerCase().trim();
+              const weight = parseFloat(cols[1]);
+              const confidence = cols[2].trim();
+              const source = cols[3] ? cols[3].trim() : 'Base CSV';
+              
+              if (nom && !isNaN(weight)) {
+                productDB[nom] = {
+                  weight: weight,
+                  confidence: confidence,
+                  sources: [source, 'Base CSV officielle']
+                };
+              }
+            }
+          }
+          console.log(`%c[IA] Base ${file} chargée avec succès`, 'color:#16a085');
+        } catch (e) {
+          console.log(`%c[IA] Impossible de charger ${file}`, 'color:#e74c3c');
+        }
+      }
+    }
+
     // Auto-enrichissement continu (toutes les 60 secondes)
     function autoEnrichDatabase() {
       // Ajoute des produits nouveaux ou met à jour la confiance
@@ -636,9 +672,10 @@
       simResult.style.display = "block";
     }
 
-    // Initialisation de l'enrichissement automatique (mise à jour continue)
+    // Initialisation de l'enrichissement automatique + chargement des bases CSV
     mergeEnrichedDB();
     autoEnrichDatabase();
+    loadCSVDatabase(); // Charge BA1.csv → BA7.csv
 
     simBtn.addEventListener('click', () => {
       const val = simInput.value.trim();
