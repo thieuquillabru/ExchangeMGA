@@ -713,7 +713,7 @@
     });
     calcShip();
 
-    // === ONGLET EXP BAT (MARITIME) ===
+    // === ONGLET EXP BAT (MARITIME) - VERSION CORRIGÉE ===
     const lengthEl = document.getElementById('length');
     const widthEl = document.getElementById('width');
     const heightEl = document.getElementById('height');
@@ -721,34 +721,30 @@
     const maritimePriceUsdEl = document.getElementById('maritime-price-usd');
     const maritimePriceMgaEl = document.getElementById('maritime-price-mga');
     const maritimeFormulaEl = document.getElementById('maritime-formula');
-    const maritimeBtns = document.querySelectorAll('#tab-exp-bat .shipbtn');
 
     let maritimeType = 'general';
-    let usdToMgaRate = 4500; // Taux de repli
+    let usdToMgaRate = 4500;
 
-    // Récupération du taux USD/MGA en temps réel
+    // Récupération du taux USD/MGA
     async function fetchUsdMgaRate() {
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
         const data = await res.json();
-        if (data && data.rates && data.rates.MGA) {
+        if (data?.rates?.MGA) {
           usdToMgaRate = data.rates.MGA;
-          console.log('%c[Taux] USD/MGA mis à jour :', 'color:#16a085', usdToMgaRate);
         }
-      } catch (e) {
-        console.log('%c[Taux] Utilisation du taux de repli', 'color:#e74c3c');
-      }
+      } catch (e) {}
     }
     fetchUsdMgaRate();
-    setInterval(fetchUsdMgaRate, 300000); // Rafraîchit toutes les 5 minutes
+    setInterval(fetchUsdMgaRate, 300000);
 
     function calculateMaritime() {
-      const l = parseFloat(lengthEl.value) || 0;
-      const w = parseFloat(widthEl.value) || 0;
-      const h = parseFloat(heightEl.value) || 0;
+      const l = parseFloat(lengthEl?.value) || 0;
+      const w = parseFloat(widthEl?.value) || 0;
+      const h = parseFloat(heightEl?.value) || 0;
 
       const volumeM3 = (l * w * h) / 1000000;
-      volumeEl.textContent = volumeM3.toFixed(3);
+      if (volumeEl) volumeEl.textContent = volumeM3.toFixed(3);
 
       let rate = 360;
       if (maritimeType === 'battery' || volumeM3 < 0.25) {
@@ -758,28 +754,44 @@
       const priceUSD = volumeM3 * rate;
       const priceMGA = Math.round(priceUSD * usdToMgaRate);
 
-      maritimePriceUsdEl.textContent = priceUSD.toFixed(2);
-      maritimePriceMgaEl.textContent = priceMGA.toLocaleString('fr-FR');
-
-      maritimeFormulaEl.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³ = ${priceUSD.toFixed(2)} $ ≈ ${priceMGA.toLocaleString('fr-FR')} Ar`;
+      if (maritimePriceUsdEl) maritimePriceUsdEl.textContent = priceUSD.toFixed(2);
+      if (maritimePriceMgaEl) maritimePriceMgaEl.textContent = priceMGA.toLocaleString('fr-FR');
+      if (maritimeFormulaEl) {
+        maritimeFormulaEl.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³ = ${priceUSD.toFixed(2)} $ ≈ ${priceMGA.toLocaleString('fr-FR')} Ar`;
+      }
     }
 
-    // Écouteurs
+    // Écouteurs dimensions
     [lengthEl, widthEl, heightEl].forEach(el => {
-      el.addEventListener('input', calculateMaritime);
+      if (el) el.addEventListener('input', calculateMaritime);
     });
 
-    maritimeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        maritimeBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        maritimeType = btn.getAttribute('data-type');
-        calculateMaritime();
+    // === CORRECTION : Boutons Type de Produit ===
+    function initMaritimeTypeButtons() {
+      const buttons = document.querySelectorAll('#tab-exp-bat .shipbtn');
+      
+      buttons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Désactive tous les boutons
+          buttons.forEach(b => b.classList.remove('active'));
+          
+          // Active le bouton cliqué
+          this.classList.add('active');
+          
+          // Met à jour le type
+          maritimeType = this.getAttribute('data-type');
+          
+          // Recalcule
+          calculateMaritime();
+        });
       });
-    });
+    }
 
-    // Calcul initial
-    setTimeout(calculateMaritime, 400);
+    // Initialisation
+    setTimeout(() => {
+      initMaritimeTypeButtons();
+      calculateMaritime(); // Calcul initial
+    }, 600);
 
     // === SIMULATION PRODUIT - SYSTÈME DE POIDS RÉALISTE ===
     const simInput = document.getElementById('product-name');
