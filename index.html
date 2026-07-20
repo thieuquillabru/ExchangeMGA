@@ -409,8 +409,8 @@
       <div class="field">
         <label>Type de produit</label>
         <div class="shipchoice">
-          <button type="button" class="shipbtn active" data-type="general">Produit général<span>360 $ / m³</span></button>
-          <button type="button" class="shipbtn" data-type="battery">Batterie ou &lt; 0.25m³<span>410 $ / m³</span></button>
+          <button type="button" class="shipbtn active" onclick="maritimeType='general'; calculateMaritime(); this.parentElement.querySelectorAll('.shipbtn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">Produit général<span>360 $ / m³</span></button>
+          <button type="button" class="shipbtn" onclick="maritimeType='battery'; calculateMaritime(); this.parentElement.querySelectorAll('.shipbtn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">Batterie ou &lt; 0.25m³<span>410 $ / m³</span></button>
         </div>
       </div>
 
@@ -566,6 +566,25 @@
     let maritimeType = 'general';
     let usdToMgaRate = 4500;
 
+    // Fonction globale simple pour les boutons
+    window.changeMaritimeType = function(element, type) {
+      // Désactive tous les boutons dans Exp Bat
+      document.querySelectorAll('#tab-exp-bat .shipbtn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Active le bouton cliqué
+      element.classList.add('active');
+      
+      // Met à jour le type
+      maritimeType = type;
+      
+      // Recalcule le prix
+      if (typeof calculateMaritime === 'function') {
+        calculateMaritime();
+      }
+    };
+
     async function fetchUsdMgaRate() {
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -599,22 +618,42 @@
       if (el) el.addEventListener('input', calculateMaritime);
     });
 
-    // === BOUTONS EXP BAT - CORRECTION DIRECTE ===
-    setTimeout(() => {
+    // === BOUTONS EXP BAT - VERSION FINALE ET SIMPLE ===
+    function initExpBatButtons() {
       const buttons = document.querySelectorAll('#tab-exp-bat .shipbtn');
       
+      if (buttons.length === 0) {
+        console.log("Aucun bouton Exp Bat trouvé");
+        return;
+      }
+
       buttons.forEach(btn => {
+        // Supprime tout ancien écouteur
+        btn.replaceWith(btn.cloneNode(true));
+      });
+
+      // Re-sélectionne les boutons après clonage
+      const freshButtons = document.querySelectorAll('#tab-exp-bat .shipbtn');
+      
+      freshButtons.forEach(btn => {
         btn.addEventListener('click', function() {
-          buttons.forEach(b => b.classList.remove('active'));
+          freshButtons.forEach(b => b.classList.remove('active'));
           this.classList.add('active');
-          maritimeType = this.dataset.type || 'general';
+          
+          maritimeType = this.getAttribute('data-type') || 'general';
           calculateMaritime();
         });
       });
-      
+
       // Calcul initial
       calculateMaritime();
-    }, 700);
+      console.log("Boutons Exp Bat initialisés avec succès");
+    }
+
+    // Initialisation après chargement complet
+    window.addEventListener('load', function() {
+      setTimeout(initExpBatButtons, 300);
+    });
 
     // === SIMULATION ===
     const simInput = document.getElementById('product-name');
