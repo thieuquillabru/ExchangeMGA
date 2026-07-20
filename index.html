@@ -713,7 +713,7 @@
     });
     calcShip();
 
-    // === ONGLET EXP BAT (MARITIME) - VERSION CORRIGÉE ===
+    // === ONGLET EXP BAT (MARITIME) - VERSION ROBUSTE ===
     const lengthEl = document.getElementById('length');
     const widthEl = document.getElementById('width');
     const heightEl = document.getElementById('height');
@@ -725,14 +725,11 @@
     let maritimeType = 'general';
     let usdToMgaRate = 4500;
 
-    // Récupération du taux USD/MGA
     async function fetchUsdMgaRate() {
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
         const data = await res.json();
-        if (data?.rates?.MGA) {
-          usdToMgaRate = data.rates.MGA;
-        }
+        if (data?.rates?.MGA) usdToMgaRate = data.rates.MGA;
       } catch (e) {}
     }
     fetchUsdMgaRate();
@@ -746,11 +743,7 @@
       const volumeM3 = (l * w * h) / 1000000;
       if (volumeEl) volumeEl.textContent = volumeM3.toFixed(3);
 
-      let rate = 360;
-      if (maritimeType === 'battery' || volumeM3 < 0.25) {
-        rate = 410;
-      }
-
+      let rate = (maritimeType === 'battery' || volumeM3 < 0.25) ? 410 : 360;
       const priceUSD = volumeM3 * rate;
       const priceMGA = Math.round(priceUSD * usdToMgaRate);
 
@@ -766,32 +759,32 @@
       if (el) el.addEventListener('input', calculateMaritime);
     });
 
-    // === CORRECTION : Boutons Type de Produit ===
+    // === BOUTONS TYPE DE PRODUIT - VERSION TRÈS ROBUSTE ===
     function initMaritimeTypeButtons() {
-      const buttons = document.querySelectorAll('#tab-exp-bat .shipbtn');
-      
-      buttons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Désactive tous les boutons
-          buttons.forEach(b => b.classList.remove('active'));
-          
-          // Active le bouton cliqué
-          this.classList.add('active');
-          
-          // Met à jour le type
-          maritimeType = this.getAttribute('data-type');
-          
-          // Recalcule
-          calculateMaritime();
-        });
+      const container = document.getElementById('tab-exp-bat');
+      if (!container) return;
+
+      container.addEventListener('click', function(e) {
+        const btn = e.target.closest('.shipbtn');
+        if (!btn) return;
+
+        // Désactive tous les boutons
+        container.querySelectorAll('.shipbtn').forEach(b => b.classList.remove('active'));
+        
+        // Active le bouton cliqué
+        btn.classList.add('active');
+        
+        // Change le type
+        maritimeType = btn.getAttribute('data-type') || 'general';
+        
+        // Recalcule
+        calculateMaritime();
       });
     }
 
     // Initialisation
-    setTimeout(() => {
-      initMaritimeTypeButtons();
-      calculateMaritime(); // Calcul initial
-    }, 600);
+    initMaritimeTypeButtons();
+    setTimeout(calculateMaritime, 400);
 
     // === SIMULATION PRODUIT - SYSTÈME DE POIDS RÉALISTE ===
     const simInput = document.getElementById('product-name');
