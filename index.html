@@ -544,7 +544,7 @@
     return { weight: 380, sources: ["Estimation"] };
   }
 
-  if (simBtn && simResult) {
+  if (simBtn && simResult && simInput) {
     simBtn.addEventListener('click', () => {
       const val = simInput.value.trim();
       if (!val) return;
@@ -559,10 +559,33 @@
       if (sourcesEl) sourcesEl.innerHTML = data.sources.map(s => `• ${s}`).join("<br>");
       simResult.style.display = "block";
     });
+
+    simInput.addEventListener('keypress', (e) => {
+      if (e.key === "Enter" && simBtn) simBtn.click();
+    });
   }
 
   // Ticker
-  function updateTicker() {
+  async function updateTicker() {
+    try {
+      const btcRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true').catch(() => null);
+      if (btcRes) {
+        const btcData = await btcRes.json();
+        const btc = btcData?.bitcoin;
+        if (btc && typeof btc.usd === 'number') {
+          const btcPriceEl = document.getElementById('btc-price');
+          const btcChgEl = document.getElementById('btc-chg');
+          if (btcPriceEl) btcPriceEl.textContent = '$' + Math.round(btc.usd).toLocaleString('fr-FR');
+          if (btcChgEl && typeof btc.usd_24h_change === 'number') {
+            const chg = btc.usd_24h_change;
+            btcChgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(1) + '%';
+            btcChgEl.className = 'chg ' + (chg >= 0 ? 'up' : 'down');
+          }
+        }
+      }
+    } catch (e) {
+      console.log('Ticker error:', e);
+    }
     setTimeout(updateTicker, 90000);
   }
   setTimeout(updateTicker, 1200);
