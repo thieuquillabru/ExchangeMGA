@@ -476,9 +476,12 @@
   async function fetchUsdMgaRate() {
     try {
       const res = await fetch('https://open.er-api.com/v6/latest/USD');
+      if (!res.ok) throw new Error('API error');
       const data = await res.json();
       if (data?.rates?.MGA) usdToMgaRate = data.rates.MGA;
-    } catch(e) {}
+    } catch(e) {
+      console.warn('USD/MGA rate fetch failed, using fallback:', usdToMgaRate);
+    }
   }
   fetchUsdMgaRate();
   setInterval(fetchUsdMgaRate, 300000);
@@ -498,6 +501,15 @@
     if (maritimePriceUsdEl) maritimePriceUsdEl.textContent = priceUSD.toFixed(2);
     if (maritimePriceMgaEl) maritimePriceMgaEl.textContent = priceMGA.toLocaleString('fr-FR');
     if (maritimeFormulaEl) maritimeFormulaEl.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³`;
+  }
+
+  // Protection supplémentaire : recalcul automatique si les inputs changent
+  if (lengthEl && widthEl && heightEl) {
+    [lengthEl, widthEl, heightEl].forEach(el => {
+      el.addEventListener('input', () => {
+        if (typeof calculateMaritime === 'function') calculateMaritime();
+      });
+    });
   }
 
   [lengthEl, widthEl, heightEl].forEach(el => el.addEventListener('input', calculateMaritime));
@@ -562,6 +574,14 @@
 
     simInput.addEventListener('keypress', (e) => {
       if (e.key === "Enter" && simBtn) simBtn.click();
+    });
+  }
+
+  // Protection contre les valeurs négatives dans Exp Avion
+  if (gramsEl) {
+    gramsEl.addEventListener('input', () => {
+      const val = parseFloat(gramsEl.value);
+      if (val < 0) gramsEl.value = 0;
     });
   }
 
