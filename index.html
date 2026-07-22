@@ -397,6 +397,7 @@
   const rateEl = document.getElementById('rate');
 
   function calcChange(rate) {
+    if (!yuanEl || !outEl) return;
     const y = parseFloat(yuanEl.value);
     if (isNaN(y) || y < 0) { outEl.textContent = '-'; return; }
     outEl.textContent = (y * 1.03 * rate).toLocaleString('fr-FR', {maximumFractionDigits:2});
@@ -445,6 +446,7 @@
   const shipBtns = document.querySelectorAll('#tab-exp-avion .shipbtn');
 
   function calcShip() {
+    if (!gramsEl || !shipOut) return;
     const g = parseFloat(gramsEl.value);
     if (isNaN(g) || g < 0) { shipOut.textContent = '-'; return; }
     const tarif = shipMode === 'express' ? 83000 : 70000;
@@ -579,6 +581,18 @@
 
     simInput.addEventListener('keypress', (e) => {
       if (e.key === "Enter" && simBtn) simBtn.click();
+    });
+  }
+
+  // Protection Exp Avion - boutons
+  if (shipBtns && shipBtns.length > 0) {
+    shipBtns.forEach(b => {
+      b.addEventListener('click', () => {
+        shipBtns.forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        shipMode = b.dataset.mode;
+        calcShip();
+      });
     });
   }
 
