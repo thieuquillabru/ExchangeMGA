@@ -334,16 +334,42 @@
         <div class="result">
           <span class="big" id="volume-m3">0.060</span><span class="unit">m³</span>
         </div>
-        <div id="volume-warning" style="display:none; margin-top:8px; padding:8px 12px; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; font-size:12px; color:#856404;">
-          ⚠️ Volume inférieur à 0.25 m³ → Tarif majoré (410 $ / m³) appliqué
-        </div>
       </div>
 
       <div class="field">
         <label>Type de produit</label>
-        <div class="shipchoice" id="maritime-type-buttons">
-          <button type="button" class="shipbtn active" data-type="general">Général<span>360 $ / m³</span></button>
-          <button type="button" class="shipbtn" data-type="battery">Batterie ou &lt; 0.25m³<span>410 $ / m³</span></button>
+        <div class="shipchoice">
+          <button type="button" class="shipbtn active" onclick="
+            this.parentElement.querySelectorAll('.shipbtn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const l = parseFloat(document.getElementById('length').value) || 0;
+            const w = parseFloat(document.getElementById('width').value) || 0;
+            const h = parseFloat(document.getElementById('height').value) || 0;
+            const vol = (l*w*h)/1000000;
+            document.getElementById('volume-m3').innerText = vol.toFixed(3);
+            const rate = 360;
+            const usd = vol * rate;
+            const mga = Math.round(usd * 4500);
+            document.getElementById('maritime-price-usd').innerText = usd.toFixed(2);
+            document.getElementById('maritime-price-mga').innerText = mga.toLocaleString('fr-FR');
+            document.getElementById('maritime-formula').innerText = rate + ' $ × ' + vol.toFixed(3) + ' m³';
+          ">Général<span>360 $ / m³</span></button>
+          
+          <button type="button" class="shipbtn" onclick="
+            this.parentElement.querySelectorAll('.shipbtn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const l = parseFloat(document.getElementById('length').value) || 0;
+            const w = parseFloat(document.getElementById('width').value) || 0;
+            const h = parseFloat(document.getElementById('height').value) || 0;
+            const vol = (l*w*h)/1000000;
+            document.getElementById('volume-m3').innerText = vol.toFixed(3);
+            const rate = 410;
+            const usd = vol * rate;
+            const mga = Math.round(usd * 4500);
+            document.getElementById('maritime-price-usd').innerText = usd.toFixed(2);
+            document.getElementById('maritime-price-mga').innerText = mga.toLocaleString('fr-FR');
+            document.getElementById('maritime-formula').innerText = rate + ' $ × ' + vol.toFixed(3) + ' m³';
+          ">Batterie ou &lt; 0.25m³<span>410 $ / m³</span></button>
         </div>
       </div>
 
@@ -558,14 +584,15 @@
 
     if (isNaN(l) || isNaN(w) || isNaN(h) || l < 0 || w < 0 || h < 0) {
       el.volume.textContent = '0.000';
-      document.getElementById('volume-warning').style.display = 'none';
+      const warningEl = document.getElementById('volume-warning');
+      if (warningEl) warningEl.style.display = 'none';
       return;
     }
 
     const volumeM3 = (l * w * h) / 1000000;
     el.volume.textContent = volumeM3.toFixed(3);
 
-    // Affichage de la notification si volume < 0.25 m³
+    // Notification si volume < 0.25 m³
     const warningEl = document.getElementById('volume-warning');
     if (warningEl) {
       if (volumeM3 < 0.25) {
@@ -593,7 +620,7 @@
     });
   }
 
-  // Maritime type buttons
+  // Maritime type buttons - Clean and reliable
   function initMaritimeButtons() {
     const container = document.getElementById('maritime-type-buttons');
     if (!container) return;
