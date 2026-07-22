@@ -487,22 +487,22 @@
   setInterval(fetchUsdMgaRate, 300000);
 
   function calculateMaritime() {
-    if (!lengthEl || !widthEl || !heightEl) return;
+    if (!lengthEl || !widthEl || !heightEl || !volumeEl || !maritimePriceUsdEl || !maritimePriceMgaEl || !maritimeFormulaEl) return;
 
     const l = Math.max(0, parseFloat(lengthEl.value) || 0);
     const w = Math.max(0, parseFloat(widthEl.value) || 0);
     const h = Math.max(0, parseFloat(heightEl.value) || 0);
     const volumeM3 = (l * w * h) / 1000000;
 
-    if (volumeEl) volumeEl.textContent = volumeM3.toFixed(3);
+    volumeEl.textContent = volumeM3.toFixed(3);
 
     const rate = (maritimeType === 'battery' || volumeM3 < 0.25) ? 410 : 360;
     const priceUSD = volumeM3 * rate;
     const priceMGA = Math.round(priceUSD * usdToMgaRate);
 
-    if (maritimePriceUsdEl) maritimePriceUsdEl.textContent = priceUSD.toFixed(2);
-    if (maritimePriceMgaEl) maritimePriceMgaEl.textContent = priceMGA.toLocaleString('fr-FR');
-    if (maritimeFormulaEl) maritimeFormulaEl.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³`;
+    maritimePriceUsdEl.textContent = priceUSD.toFixed(2);
+    maritimePriceMgaEl.textContent = priceMGA.toLocaleString('fr-FR');
+    maritimeFormulaEl.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³`;
   }
 
   // Protection supplémentaire : recalcul automatique si les inputs changent
