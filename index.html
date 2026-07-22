@@ -391,68 +391,116 @@
 </div>
 
 <script>
-  // === CHANGE ===
-  const yuanEl = document.getElementById('yuan');
-  const outEl = document.getElementById('out');
-  const rateEl = document.getElementById('rate');
+(function() {
+  'use strict';
 
+  // === CONSTANTS ===
+  const FEE = 1.03;
+  const FALLBACK_YUAN_RATE = 631.89;
+  const FALLBACK_USD_RATE = 4500;
+  const TARIFF_AIR_EXPRESS = 83000;
+  const TARIFF_AIR_NORMAL = 70000;
+  const TARIFF_SEA_GENERAL = 360;
+  const TARIFF_SEA_BATTERY = 410;
+
+  // === DOM ELEMENTS (cached safely) ===
+  const elements = {
+    yuan: document.getElementById('yuan'),
+    out: document.getElementById('out'),
+    rate: document.getElementById('rate'),
+    grams: document.getElementById('grams'),
+    shipOut: document.getElementById('shipOut'),
+    length: document.getElementById('length'),
+    width: document.getElementById('width'),
+    height: document.getElementById('height'),
+    volume: document.getElementById('volume-m3'),
+    maritimeUsd: document.getElementById('maritime-price-usd'),
+    maritimeMga: document.getElementById('maritime-price-mga'),
+    maritimeFormula: document.getElementById('maritime-formula'),
+    simInput: document.getElementById('product-name'),
+    simBtn: document.getElementById('search-btn'),
+    simResult: document.getElementById('sim-result'),
+    tabSelect: document.getElementById('tab-select'),
+    maritimeButtons: document.getElementById('maritime-type-buttons')
+  };
+
+  // === STATE ===
+  let shipMode = 'express';
+  /** @type {'general' | 'battery'} */
+  let maritimeType = 'general';
+  /** @type {number} */
+  let usdToMgaRate = 4500;
+
+  // === UTILS ===
+  function safeParseFloat(value) {
+    const num = parseFloat(value);
+    return isNaN(num) ? 0 : num;
+  }
+
+  // === CHANGE ===
   function calcChange(rate) {
-    if (!yuanEl || !outEl) return;
-    const y = parseFloat(yuanEl.value);
-    if (isNaN(y) || y < 0) { outEl.textContent = '-'; return; }
-    outEl.textContent = (y * 1.03 * rate).toLocaleString('fr-FR', {maximumFractionDigits:2});
+    if (!elements.yuan || !elements.out) return;
+    const y = safeParseFloat(elements.yuan.value);
+    if (y < 0) { elements.out.textContent = '-'; return; }
+    elements.out.textContent = (y * 1.03 * rate).toLocaleString('fr-FR', {maximumFractionDigits:2});
   }
 
   function fetchRate() {
-    if (!rateEl) return;
+    if (!elements.rate) return;
     fetch('https://open.er-api.com/v6/latest/CNY')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(j => {
         const v = j?.rates?.MGA;
         if (v) {
-          rateEl.textContent = v.toLocaleString('fr-FR', {maximumFractionDigits:2});
+          elements.rate.textContent = v.toLocaleString('fr-FR', {maximumFractionDigits:2});
           localStorage.setItem('yuan_rate', v);
           calcChange(v);
         }
       })
       .catch(() => {
         const fb = parseFloat(localStorage.getItem('yuan_rate')) || 631.89;
-        rateEl.textContent = fb.toLocaleString('fr-FR', {maximumFractionDigits:2});
+        elements.rate.textContent = fb.toLocaleString('fr-FR', {maximumFractionDigits:2});
         calcChange(fb);
       });
   }
 
-  yuanEl.addEventListener('input', () => calcChange(parseFloat(localStorage.getItem('yuan_rate')) || 631.89));
-  document.getElementById('refresh').addEventListener('click', fetchRate);
+  if (elements.yuan) {
+    elements.yuan.addEventListener('input', () => calcChange(parseFloat(localStorage.getItem('yuan_rate')) || 631.89));
+  }
+  const refreshBtn = document.getElementById('refresh');
+  if (refreshBtn) refreshBtn.addEventListener('click', fetchRate);
 
   const cached = parseFloat(localStorage.getItem('yuan_rate'));
-  if (cached) { rateEl.textContent = cached.toLocaleString('fr-FR',{maximumFractionDigits:2}); calcChange(cached); }
+  if (cached && elements.rate) {
+    elements.rate.textContent = cached.toLocaleString('fr-FR',{maximumFractionDigits:2});
+    calcChange(cached);
+  }
   fetchRate();
 
   // === TABS ===
-  const tabSelect = document.getElementById('tab-select');
   function switchTab(tabName) {
     document.querySelectorAll('.tabview').forEach(v => v.classList.remove('active'));
-    document.getElementById('tab-' + tabName).classList.add('active');
-    tabSelect.value = tabName;
+    const target = document.getElementById('tab-' + tabName);
+    if (target) target.classList.add('active');
+    if (elements.tabSelect) elements.tabSelect.value = tabName;
   }
-  tabSelect.addEventListener('change', () => switchTab(tabSelect.value));
+  if (elements.tabSelect) {
+    elements.tabSelect.addEventListener('change', () => switchTab(elements.tabSelect.value));
+  }
   switchTab('change');
 
   // === EXP AVION ===
-  const gramsEl = document.getElementById('grams');
-  const shipOut = document.getElementById('shipOut');
-  let shipMode = 'express';
-  const shipBtns = document.querySelectorAll('#tab-exp-avion .shipbtn');
-
   function calcShip() {
-    if (!gramsEl || !shipOut) return;
-    const g = parseFloat(gramsEl.value);
-    if (isNaN(g) || g < 0) { shipOut.textContent = '-'; return; }
+    if (!elements.grams || !elements.shipOut) return;
+    const g = safeParseFloat(elements.grams.value);
+    if (g < 0) { elements.shipOut.textContent = '-'; return; }
     const tarif = shipMode === 'express' ? 83000 : 70000;
-    shipOut.textContent = (g * tarif / 1000).toLocaleString('fr-FR', {maximumFractionDigits:2});
+    elements.shipOut.textContent = (g * tarif / 1000).toLocaleString('fr-FR', {maximumFractionDigits:2});
   }
-  gramsEl.addEventListener('input', calcShip);
+
+  if (elements.grams) elements.grams.addEventListener('input', calcShip);
+
+  const shipBtns = document.querySelectorAll('#tab-exp-avion .shipbtn');
   shipBtns.forEach(b => {
     b.addEventListener('click', () => {
       shipBtns.forEach(x => x.classList.remove('active'));
@@ -464,16 +512,13 @@
   calcShip();
 
   // === EXP BAT ===
-  const lengthEl = document.getElementById('length');
-  const widthEl = document.getElementById('width');
-  const heightEl = document.getElementById('height');
-  const volumeEl = document.getElementById('volume-m3');
-  const maritimePriceUsdEl = document.getElementById('maritime-price-usd');
-  const maritimePriceMgaEl = document.getElementById('maritime-price-mga');
-  const maritimeFormulaEl = document.getElementById('maritime-formula');
-
-  let maritimeType = 'general';
-  let usdToMgaRate = 4500;
+  /**
+   * Type de produit pour l'expédition maritime
+   * - 'general' : tarif normal (360 $/m³)
+   * - 'battery' : tarif majoré (410 $/m³) ou si volume < 0.25m³
+   */
+  maritimeType = 'general';
+  usdToMgaRate = 4500;
 
   async function fetchUsdMgaRate() {
     try {
@@ -489,38 +534,37 @@
   setInterval(fetchUsdMgaRate, 300000);
 
   function calculateMaritime() {
-    if (!lengthEl || !widthEl || !heightEl || !volumeEl || !maritimePriceUsdEl || !maritimePriceMgaEl || !maritimeFormulaEl) return;
+    if (!elements.length || !elements.width || !elements.height || !elements.volume || 
+        !elements.maritimeUsd || !elements.maritimeMga || !elements.maritimeFormula) return;
 
-    const l = Math.max(0, parseFloat(lengthEl.value) || 0);
-    const w = Math.max(0, parseFloat(widthEl.value) || 0);
-    const h = Math.max(0, parseFloat(heightEl.value) || 0);
+    const l = Math.max(0, safeParseFloat(elements.length.value));
+    const w = Math.max(0, safeParseFloat(elements.width.value));
+    const h = Math.max(0, safeParseFloat(elements.height.value));
     const volumeM3 = (l * w * h) / 1000000;
 
-    volumeEl.textContent = volumeM3.toFixed(3);
+    elements.volume.textContent = volumeM3.toFixed(3);
 
     const rate = (maritimeType === 'battery' || volumeM3 < 0.25) ? 410 : 360;
     const priceUSD = volumeM3 * rate;
     const priceMGA = Math.round(priceUSD * usdToMgaRate);
 
-    maritimePriceUsdEl.textContent = priceUSD.toFixed(2);
-    maritimePriceMgaEl.textContent = priceMGA.toLocaleString('fr-FR');
-    maritimeFormulaEl.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³`;
+    elements.maritimeUsd.textContent = priceUSD.toFixed(2);
+    elements.maritimeMga.textContent = priceMGA.toLocaleString('fr-FR');
+    elements.maritimeFormula.textContent = `${rate} $ × ${volumeM3.toFixed(3)} m³`;
   }
 
-  // Protection supplémentaire : recalcul automatique si les inputs changent
-  if (lengthEl && widthEl && heightEl) {
-    [lengthEl, widthEl, heightEl].forEach(el => {
+  // Protection des inputs Exp Bat
+  if (elements.length && elements.width && elements.height) {
+    [elements.length, elements.width, elements.height].forEach(el => {
       el.addEventListener('input', () => {
         if (typeof calculateMaritime === 'function') calculateMaritime();
       });
     });
   }
 
-  [lengthEl, widthEl, heightEl].forEach(el => el.addEventListener('input', calculateMaritime));
-
-  // Boutons Exp Bat (initialisation robuste)
+  // Boutons Exp Bat (délégation robuste)
   function initMaritimeButtons() {
-    const container = document.getElementById('maritime-type-buttons');
+    const container = elements.maritimeButtons;
     if (!container) return;
 
     container.addEventListener('click', function(e) {
@@ -536,18 +580,14 @@
   }
   initMaritimeButtons();
 
-  // Initialisation sécurisée du type maritime
+  // Initialisation sécurisée
   maritimeType = 'general';
   setTimeout(() => {
     if (typeof calculateMaritime === 'function') calculateMaritime();
   }, 400);
 
   // === SIMULATION ===
-  const simInput = document.getElementById('product-name');
-  const simBtn = document.getElementById('search-btn');
-  const simResult = document.getElementById('sim-result');
-
-  let productDB = {
+  const productDB = {
     "iphone 16 pro": { weight: 199, sources: ["apple.com"] },
     "iphone 16 pro max": { weight: 227, sources: ["apple.com"] },
     "t-shirt en coton": { weight: 180, sources: ["hm.com"] },
@@ -556,16 +596,27 @@
 
   function getBestMatch(query) {
     const q = query.toLowerCase().trim();
-    if (productDB[q]) return productDB[q];
-    if (q.includes("iphone")) return { weight: 199, sources: ["apple.com"] };
-    if (q.includes("t-shirt")) return { weight: 175, sources: ["hm.com"] };
-    if (q.includes("batterie")) return { weight: 195, sources: ["anker.com"] };
-    return { weight: 380, sources: ["Estimation"] };
+
+    if (productDB[q]) {
+      return { ...productDB[q], agent: "Base officielle" };
+    }
+
+    if (q.includes("iphone")) {
+      return { weight: 199, sources: ["apple.com"], agent: "Règle iPhone" };
+    }
+    if (q.includes("t-shirt")) {
+      return { weight: 175, sources: ["hm.com"], agent: "Règle textile" };
+    }
+    if (q.includes("batterie")) {
+      return { weight: 195, sources: ["anker.com"], agent: "Règle batterie" };
+    }
+
+    return { weight: 380, sources: ["Estimation générique"], agent: "Règle par défaut" };
   }
 
-  if (simBtn && simResult && simInput) {
-    simBtn.addEventListener('click', () => {
-      const val = simInput.value.trim();
+  if (elements.simBtn && elements.simResult && elements.simInput) {
+    elements.simBtn.addEventListener('click', () => {
+      const val = elements.simInput.value.trim();
       if (!val) return;
 
       const data = getBestMatch(val);
@@ -576,35 +627,34 @@
       if (nameEl) nameEl.textContent = val;
       if (weightEl) weightEl.textContent = data.weight;
       if (sourcesEl) sourcesEl.innerHTML = data.sources.map(s => `• ${s}`).join("<br>");
-      simResult.style.display = "block";
+      elements.simResult.style.display = "block";
     });
 
-    simInput.addEventListener('keypress', (e) => {
-      if (e.key === "Enter" && simBtn) simBtn.click();
+    elements.simInput.addEventListener('keypress', (e) => {
+      if (e.key === "Enter" && elements.simBtn) elements.simBtn.click();
     });
   }
 
   // Protection Exp Avion - boutons
-  if (shipBtns && shipBtns.length > 0) {
-    shipBtns.forEach(b => {
-      b.addEventListener('click', () => {
-        shipBtns.forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        shipMode = b.dataset.mode;
-        calcShip();
-      });
+  const shipBtnsExp = document.querySelectorAll('#tab-exp-avion .shipbtn');
+  shipBtnsExp.forEach(b => {
+    b.addEventListener('click', () => {
+      shipBtnsExp.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      shipMode = b.dataset.mode;
+      if (typeof calcShip === 'function') calcShip();
     });
-  }
+  });
 
   // Protection contre les valeurs négatives dans Exp Avion
-  if (gramsEl) {
-    gramsEl.addEventListener('input', () => {
-      const val = parseFloat(gramsEl.value);
-      if (val < 0) gramsEl.value = 0;
+  if (elements.grams) {
+    elements.grams.addEventListener('input', () => {
+      const val = safeParseFloat(elements.grams.value);
+      if (val < 0) elements.grams.value = 0;
     });
   }
 
-  // Ticker
+  // === TICKER ===
   async function updateTicker() {
     try {
       // BTC
@@ -658,6 +708,7 @@
   }
   setTimeout(updateTicker, 1200);
 
+})();
 </script>
 </body>
 </html>
