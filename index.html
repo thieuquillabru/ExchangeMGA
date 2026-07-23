@@ -338,38 +338,9 @@
 
       <div class="field">
         <label>Type de produit</label>
-        <div class="shipchoice">
-          <button type="button" class="shipbtn active" onclick="
-            this.parentElement.querySelectorAll('.shipbtn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const l = parseFloat(document.getElementById('length').value) || 0;
-            const w = parseFloat(document.getElementById('width').value) || 0;
-            const h = parseFloat(document.getElementById('height').value) || 0;
-            const vol = (l*w*h)/1000000;
-            document.getElementById('volume-m3').innerText = vol.toFixed(3);
-            const rate = 360;
-            const usd = vol * rate;
-            const mga = Math.round(usd * 4500);
-            document.getElementById('maritime-price-usd').innerText = usd.toFixed(2);
-            document.getElementById('maritime-price-mga').innerText = mga.toLocaleString('fr-FR');
-            document.getElementById('maritime-formula').innerText = rate + ' $ × ' + vol.toFixed(3) + ' m³';
-          ">Général<span>360 $ / m³</span></button>
-          
-          <button type="button" class="shipbtn" onclick="
-            this.parentElement.querySelectorAll('.shipbtn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const l = parseFloat(document.getElementById('length').value) || 0;
-            const w = parseFloat(document.getElementById('width').value) || 0;
-            const h = parseFloat(document.getElementById('height').value) || 0;
-            const vol = (l*w*h)/1000000;
-            document.getElementById('volume-m3').innerText = vol.toFixed(3);
-            const rate = 410;
-            const usd = vol * rate;
-            const mga = Math.round(usd * 4500);
-            document.getElementById('maritime-price-usd').innerText = usd.toFixed(2);
-            document.getElementById('maritime-price-mga').innerText = mga.toLocaleString('fr-FR');
-            document.getElementById('maritime-formula').innerText = rate + ' $ × ' + vol.toFixed(3) + ' m³';
-          ">Batterie ou &lt; 0.25m³<span>410 $ / m³</span></button>
+        <div class="shipchoice" id="maritime-type-buttons">
+          <button type="button" class="shipbtn active" data-type="general">Général<span>360 $ / m³</span></button>
+          <button type="button" class="shipbtn" data-type="battery">Batterie ou &lt; 0.25m³<span>410 $ / m³</span></button>
         </div>
       </div>
 
@@ -465,6 +436,16 @@
     return isNaN(num) ? 0 : num;
   }
 
+  // localStorage peut lever une SecurityError en navigation privée Safari (iOS).
+  // Sans protection, cette erreur non interceptée interromprait tout le reste de
+  // l'IIFE (Exp Avion, Exp Bat, Simulation, Ticker ne s'initialiseraient jamais).
+  function safeGetItem(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function safeSetItem(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { /* stockage indisponible, ignoré */ }
+  }
+
   function debounce(fn, delay = 120) {
     let timeout;
     return function(...args) {
@@ -492,24 +473,24 @@
         const v = j?.rates?.MGA;
         if (v) {
           el.rate.textContent = v.toLocaleString('fr-FR', {maximumFractionDigits:2});
-          localStorage.setItem('yuan_rate', v);
+          safeSetItem('yuan_rate', v);
           calcChange(v);
         }
       })
       .catch(() => {
-        const fb = parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_YUAN_RATE;
+        const fb = parseFloat(safeGetItem('yuan_rate')) || FALLBACK_YUAN_RATE;
         el.rate.textContent = fb.toLocaleString('fr-FR', {maximumFractionDigits:2});
         calcChange(fb);
       });
   }
 
   if (el.yuan) {
-    el.yuan.addEventListener('input', () => calcChange(parseFloat(localStorage.getItem('yuan_rate')) || FALLBACK_YUAN_RATE));
+    el.yuan.addEventListener('input', () => calcChange(parseFloat(safeGetItem('yuan_rate')) || FALLBACK_YUAN_RATE));
   }
   const refreshBtn = document.getElementById('refresh');
   if (refreshBtn) refreshBtn.addEventListener('click', fetchRate);
 
-  const cached = parseFloat(localStorage.getItem('yuan_rate'));
+  const cached = parseFloat(safeGetItem('yuan_rate'));
   if (cached && el.rate) {
     el.rate.textContent = cached.toLocaleString('fr-FR',{maximumFractionDigits:2});
     calcChange(cached);
