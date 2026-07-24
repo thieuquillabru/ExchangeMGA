@@ -108,7 +108,7 @@
     color: var(--gray-700); margin-bottom: 8px; letter-spacing: 0.3px;
   }
 
-  input[type="number"], input[type="text"] {
+  input[type="number"], input[type="text"], input[type="password"] {
     width: 100%; background: var(--gray-50); border: 1px solid var(--gray-200);
     color: var(--gray-800); font-size: 22px; font-weight: 600;
     padding: 14px 18px; border-radius: 12px; outline: none;
@@ -399,6 +399,35 @@
             <span id="sim-weight-value"></span> <span style="font-size:14px;color:#64748b;">g</span>
           </div>
           <div class="sim-sources" id="sim-sources" style="margin-top:12px;font-size:12px;"></div>
+          <div id="ai-results" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;font-size:12px;color:var(--gray-600);border-top:1px solid var(--gray-200);padding-top:14px;">
+        <div style="margin-bottom:10px;color:var(--gray-600);font-size:11.5px;line-height:1.5;">
+          Optionnel : ajoute tes propres clés API pour obtenir une vraie estimation d'un modèle d'IA en complément de la base locale.
+          Les clés sont utilisées uniquement dans ton navigateur pour appeler directement le fournisseur choisi ; elles ne sont ni stockées, ni envoyées ailleurs.
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Clé API Groq (Llama 3.1)</span>
+            <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-size:11px;font-weight:600;text-decoration:none;">Obtenir une clé ↗</a>
+          </label>
+          <input type="password" id="groq-key" placeholder="gsk_..." autocomplete="off" style="font-size:14px;padding:10px 14px;">
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Clé API OpenAI (ChatGPT)</span>
+            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-size:11px;font-weight:600;text-decoration:none;">Obtenir une clé ↗</a>
+          </label>
+          <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off" style="font-size:14px;padding:10px 14px;">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Clé API Anthropic (Claude)</span>
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-size:11px;font-weight:600;text-decoration:none;">Obtenir une clé ↗</a>
+          </label>
+          <input type="password" id="claude-key" placeholder="sk-ant-..." autocomplete="off" style="font-size:14px;padding:10px 14px;">
         </div>
       </div>
     </div>
@@ -678,6 +707,120 @@
     return { weight: 380, sources: ["Estimation générique"], agent: "Règle par défaut" };
   }
 
+  // === Estimation IA réelle (optionnelle) ===
+  function extractWeight(text) {
+    const match = (text || '').match(/[\d]+([.,]\d+)?/);
+    if (!match) return NaN;
+    const w = parseFloat(match[0].replace(',', '.'));
+    return (w > 0 && w < 100000) ? w : NaN;
+  }
+
+  const AI_SYS = "Tu es un expert en poids de produits. Réponds uniquement avec le poids en grammes (nombre uniquement, sans unité ni texte). Si tu ne connais pas le produit exact, donne une estimation réaliste.";
+  const AI_USER = (name) => `Quel est le poids approximatif d'un(e) ${name} ? Réponds uniquement avec un nombre en grammes.`;
+
+  async function callGroq(name, apiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST', signal: controller.signal,
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [{ role: "system", content: AI_SYS }, { role: "user", content: AI_USER(name) }],
+          max_tokens: 10, temperature: 0.1
+        })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const j = await res.json();
+      return { weight: extractWeight(j.choices?.[0]?.message?.content) };
+    } finally { clearTimeout(timeoutId); }
+  }
+
+  async function callOpenAI(name, apiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+    try {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST', signal: controller.signal,
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "system", content: AI_SYS }, { role: "user", content: AI_USER(name) }],
+          max_tokens: 10, temperature: 0.1
+        })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const j = await res.json();
+      return { weight: extractWeight(j.choices?.[0]?.message?.content) };
+    } finally { clearTimeout(timeoutId); }
+  }
+
+  async function callClaude(name, apiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', signal: controller.signal,
+        headers: {
+          'x-api-key': apiKey, 'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true', 'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001", max_tokens: 10,
+          system: AI_SYS, messages: [{ role: "user", content: AI_USER(name) }]
+        })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const j = await res.json();
+      return { weight: extractWeight(j.content?.[0]?.text) };
+    } finally { clearTimeout(timeoutId); }
+  }
+
+  async function runAiEstimates(productName) {
+    const aiResultsEl = document.getElementById('ai-results');
+    if (!aiResultsEl) return;
+    aiResultsEl.innerHTML = '';
+
+    const providers = [
+      { id: 'groq', label: 'Groq (Llama 3.1)', color: 'var(--teal)', keyId: 'groq-key', call: callGroq },
+      { id: 'openai', label: 'OpenAI (ChatGPT)', color: 'var(--navy-light)', keyId: 'openai-key', call: callOpenAI },
+      { id: 'claude', label: 'Anthropic (Claude)', color: 'var(--gold)', keyId: 'claude-key', call: callClaude }
+    ];
+
+    const active = providers.filter(p => {
+      const keyEl = document.getElementById(p.keyId);
+      return keyEl && keyEl.value.trim().length > 0;
+    });
+
+    if (active.length === 0) return;
+
+    const rows = {};
+    active.forEach(p => {
+      const row = document.createElement('div');
+      row.style.cssText = `margin-top:8px;padding:10px 12px;border-radius:8px;border:1px solid ${p.color};background:rgba(0,0,0,0.02);font-size:12.5px;`;
+      row.innerHTML = `<strong style="color:${p.color};">${p.label}</strong> — <span class="ai-status">appel en cours…</span>`;
+      aiResultsEl.appendChild(row);
+      rows[p.id] = row;
+    });
+
+    await Promise.all(active.map(async (p) => {
+      const keyEl = document.getElementById(p.keyId);
+      const apiKey = keyEl.value.trim();
+      const statusEl = rows[p.id].querySelector('.ai-status');
+      try {
+        const result = await p.call(productName, apiKey);
+        if (result && !isNaN(result.weight)) {
+          statusEl.innerHTML = `<strong>${result.weight.toLocaleString('fr-FR')} g</strong> <span style="color:var(--gray-600);">(réponse réelle de l'API)</span>`;
+        } else {
+          statusEl.innerHTML = `<span style="color:#dc2626;">réponse invalide ou non exploitable</span>`;
+        }
+      } catch (e) {
+        statusEl.innerHTML = `<span style="color:#dc2626;">échec de l'appel (${e.message})</span>`;
+      }
+    }));
+  }
+
   if (el.simBtn && el.simResult && el.simInput) {
     el.simBtn.addEventListener('click', () => {
       const val = el.simInput.value.trim();
@@ -692,6 +835,8 @@
       if (weightEl) weightEl.textContent = data.weight;
       if (sourcesEl) sourcesEl.innerHTML = data.sources.map(s => `• ${s}`).join("<br>");
       el.simResult.style.display = "block";
+
+      runAiEstimates(val);
     });
 
     el.simInput.addEventListener('keypress', (e) => {
